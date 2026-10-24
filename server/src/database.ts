@@ -180,6 +180,11 @@ export function openDatabase(filename: string) {
       db.exec("ALTER TABLE sessions ADD COLUMN event_name TEXT NOT NULL DEFAULT ''");
       db.prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)').run(13,Date.now());
     }
+    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 14').get()) {
+      // Small key/value settings the host changes in the app (e.g. the private creator code hash).
+      db.exec('CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
+      db.prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)').run(14,Date.now());
+    }
   })();
   return db;
 }

@@ -8,6 +8,7 @@ import './style.css';
 import { HostArea } from './host.js';
 import { JoinPage, ParticipantPage, PresenterPage } from './lobby.js';
 import { ClockOffset } from './game.js';
+import { OpenInBrowser } from './desktop.js';
 import './theme.css';
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
     return () => { controller.abort(); clearInterval(clockTimer); stopRestart(); socket.disconnect(); };
   }, []);
   return <ClockOffset.Provider value={clockOffset}><div className={`shell ${location.pathname.startsWith('/present/') ? 'presenter-shell' : location.pathname.startsWith('/s/') ? 'participant-shell' : ''}`}>
-    <header><Link className="brand" to="/join" aria-label="MuziQuiz home"><span className="brand-mark">mq<span>•</span></span>MuziQuiz</Link><nav aria-label="Main navigation"><Link aria-current={location.pathname === '/join' ? 'page' : undefined} to="/join">Participate</Link><Link aria-current={location.pathname.startsWith('/host') ? 'page' : undefined} to="/host">Host space <span aria-hidden="true">↗</span></Link></nav></header>
+    <header><Link className="brand" to="/join" aria-label="MuziQuiz home"><span className="brand-mark">mq<span>•</span></span>MuziQuiz</Link><nav aria-label="Main navigation"><Link aria-current={location.pathname === '/join' ? 'page' : undefined} to="/join">Participate</Link><Link aria-current={location.pathname.startsWith('/host') ? 'page' : undefined} to="/host">Host space <span aria-hidden="true">↗</span></Link><OpenInBrowser/></nav></header>
     <main><Routes>
       <Route path="/" element={<JoinPage/>}/><Route path="/join" element={<JoinPage/>}/>
       <Route path="/host/*" element={<HostArea/>}/>

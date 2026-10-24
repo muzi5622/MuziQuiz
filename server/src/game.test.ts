@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { io, type Socket } from 'socket.io-client';
 import type { ClientToServerEvents, HostLobby, ParticipantLobby, PublicLobby, ServerToClientEvents, TransitionSchema } from '@localmenti/shared';
-import { MAX_PARTICIPANTS } from '@localmenti/shared';
+import { MAX_PARTICIPANTS, RESERVED_AVATAR_INDEX } from '@localmenti/shared';
 import type { z } from 'zod';
 import { createApp } from './app.js';
 import { openDatabase } from './database.js';
@@ -429,6 +429,26 @@ describe('authoritative quiz engine', () => {
     const host = await f.host(); const bot = (await f.state()).players[0];
     expect((await host.timeout(3000).emitWithAck('host:kick', { sessionId:f.lobby.id, participantId:bot.id })).ok).toBe(true);
     expect((await joinFrom('10.2.0.1', 'RealPerson')).statusCode).toBe(201);
+  });
+  it('accepts the built-in creator code with no setup, and lets the host replace it in the app', async () => {
+    const f = await fixture([question]);
+    const saved = process.env.RESERVED_JOIN_CODE_HASH; delete process.env.RESERVED_JOIN_CODE_HASH;
+    try {
+      const hostApi = (method: 'GET' | 'POST' | 'DELETE', url: string, payload?: object) => f.app.inject({ method, url, headers:{ ...f.headers(), cookie:f.cookie }, ...(payload ? { payload } : {}) });
+      const joinAs = (nickname: string) => f.app.inject({ method:'POST', url:'/api/join', headers:f.headers(), payload:{ pin:f.lobby.pin, nickname } });
+      expect((await hostApi('GET', '/api/host/settings')).json()).toEqual({ privateCode:'built-in' });
+      expect((await joinAs('MUZI_0022')).json().participant).toMatchObject({ nickname:'MUZI', avatarIndex:RESERVED_AVATAR_INDEX });
+      expect((await hostApi('POST', '/api/host/settings/private-code', { code:'bad code' })).statusCode).toBe(400);
+      expect((await f.app.inject({ method:'POST', url:'/api/host/settings/private-code', headers:f.headers(), payload:{ code:'OWNER_abcd1234' } })).statusCode).toBe(401);
+      const set = await hostApi('POST', '/api/host/settings/private-code', { code:'OWNER_abcd1234' });
+      expect(set.json()).toEqual({ privateCode:'app' }); expect(set.body).not.toContain('OWNER_abcd1234');
+      // The replaced built-in code no longer works; the new one does (MUZI is already taken in this lobby).
+      expect((await joinAs('MUZI_0022')).statusCode).toBe(400);
+      expect((await joinAs('OWNER_abcd1234')).json().code).toBe('RESERVED_ALREADY_JOINED');
+      expect((await hostApi('DELETE', '/api/host/settings/private-code')).json()).toEqual({ privateCode:'built-in' });
+      process.env.RESERVED_JOIN_CODE_HASH = 'a'.repeat(64);
+      expect((await hostApi('GET', '/api/host/settings')).json()).toEqual({ privateCode:'env' });
+    } finally { if (saved === undefined) delete process.env.RESERVED_JOIN_CODE_HASH; else process.env.RESERVED_JOIN_CODE_HASH = saved; }
   });
   it('rejects look-alike names that imitate the creator or other players', async () => {
     const f = await fixture([question]);

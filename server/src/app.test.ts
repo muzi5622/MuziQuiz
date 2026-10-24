@@ -35,7 +35,7 @@ describe('offline foundation', () => {
       expect(first.pragma('journal_mode', { simple: true })).toBe('wal');
       first.close();
       const second = openDatabase(filename);
-      expect(second.prepare('SELECT COUNT(*) AS count FROM schema_migrations').get()).toEqual({ count: 13 });
+      expect(second.prepare('SELECT COUNT(*) AS count FROM schema_migrations').get()).toEqual({ count: 14 });
       second.close();
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });

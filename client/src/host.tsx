@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { MAX_IMPORT_BYTES, MIN_ANSWER_SECONDS, QuizDraftSchema, type HostLobby, type NetworkAddress, type Question, type Quiz, type QuizDraft, type QuizSummary } from '@localmenti/shared';
+import { MAX_IMPORT_BYTES, MIN_ANSWER_SECONDS, PrivateCodeSchema, QuizDraftSchema, type HostLobby, type NetworkAddress, type Question, type Quiz, type QuizDraft, type QuizSummary } from '@localmenti/shared';
 import './host.css';
 import { ImportGuide } from './import-guide.js';
 import { PodiumCardButton } from './result-card.js';
@@ -114,11 +114,50 @@ function Library() {
     {error && <p role="alert" className="error">{error}</p>}
     <SessionLaunch quizzes={quizzes ?? []}/>
     <CompletedSessions key={quizzes?.map(quiz => quiz.id).join(',')}/>
+    <CreatorCodeSettings/>
     {showImport && <ImportGuide busy={busy} error={error} onClose={() => setShowImport(false)} onChoose={() => fileInput.current?.click()} onPaste={text => void importQuiz(text)}/>}
     {!quizzes && !error && <p role="status">Loading your library…</p>}
     {quizzes?.length === 0 && <div className="empty-library"><span className="empty-symbol" aria-hidden="true">?</span><h2>Every great round starts with a question.</h2><p>Create your first quiz, or import a MuziQuiz JSON file.</p><button disabled={busy} onClick={() => void create()}>Create your first quiz ↗</button></div>}
     <div className="quiz-grid">{quizzes?.map((quiz, index) => <article className="quiz-card" key={quiz.id}><div className="card-number">{String(index + 1).padStart(2, '0')} <span>{quiz.questionCount} {quiz.questionCount === 1 ? 'question' : 'questions'}</span></div><h2><Link to={`/host/quizzes/${quiz.id}`}>{quiz.title}</Link></h2><p>{quiz.description || 'A fresh set of possibilities.'}</p><div className="card-actions"><Link className="edit-link" to={`/host/quizzes/${quiz.id}`}>Edit quiz ↗</Link><button disabled={busy} className="text-button danger" onClick={() => void remove(quiz)} aria-label={`Delete ${quiz.title}`}>Delete</button></div></article>)}</div>
     <p className="phase-note">Live questions and server-controlled speed scoring are ready. Top-10 standings, unscored polls and local CSV exports are ready.</p></>;
+}
+const PRIVATE_CODE_STATUS = {
+  app: 'A private code is set in this app.',
+  env: 'A private code is set in the .env settings file. Saving one here replaces it.',
+  'built-in': 'The built-in creator code is active. Saving a code here replaces it.'
+} as const;
+/** Lets the host set the private code that joins as the reserved MUZI creator identity. */
+function CreatorCodeSettings() {
+  const [source,setSource] = useState<keyof typeof PRIVATE_CODE_STATUS>();
+  const [code,setCode] = useState('');
+  const [busy,setBusy] = useState(false);
+  const [notice,setNotice] = useState('');
+  const [error,setError] = useState('');
+  useEffect(() => { api<{ privateCode: keyof typeof PRIVATE_CODE_STATUS }>('/settings').then(data => setSource(data.privateCode)).catch(failure => setError(message(failure))); },[]);
+  const valid = PrivateCodeSchema.safeParse(code).success;
+  async function save(event: FormEvent) {
+    event.preventDefault(); setBusy(true); setError(''); setNotice('');
+    try { const data = await api<{ privateCode: keyof typeof PRIVATE_CODE_STATUS }>('/settings/private-code','POST',{ code }); setSource(data.privateCode); setCode(''); setNotice('Saved. Type this code as the nickname on a phone to join as MUZI.'); }
+    catch (failure) { setError(message(failure)); }
+    finally { setBusy(false); }
+  }
+  async function remove() {
+    if (!window.confirm('Remove the code set in this app and go back to the built-in creator code?')) return;
+    setBusy(true); setError(''); setNotice('');
+    try { const data = await api<{ privateCode: keyof typeof PRIVATE_CODE_STATUS }>('/settings/private-code','DELETE'); setSource(data.privateCode); setNotice('Removed. The built-in creator code is active again.'); }
+    catch (failure) { setError(message(failure)); }
+    finally { setBusy(false); }
+  }
+  return <details className="completed-sessions creator-code-settings"><summary>Creator identity (MUZI)</summary>
+    <p className="hint">Typing the private code as a nickname joins as MUZI with the gold skull avatar and Creator tag. It gives no host rights and no extra points. Only a hash of the code is stored.</p>
+    {source && <p role="status"><strong>{PRIVATE_CODE_STATUS[source]}</strong></p>}
+    <form onSubmit={save} className="creator-code-form"><label htmlFor="private-code">New private code</label>
+      <input id="private-code" type="password" autoComplete="off" maxLength={24} value={code} placeholder="e.g. NAME_1234" onChange={event => setCode(event.target.value)}/>
+      <p className="hint">Letters or numbers, one underscore, then 4–16 letters or numbers.</p>
+      <div className="creator-code-actions"><button className="button" disabled={busy || !valid}>{busy ? 'Saving…' : 'Save private code'}</button>{source === 'app' && <button type="button" className="text-button danger" disabled={busy} onClick={() => void remove()}>Use built-in code</button>}</div>
+    </form>
+    {notice && <p className="hint" role="status">{notice}</p>}{error && <p className="error" role="alert">{error}</p>}
+  </details>;
 }
 function CompletedSessions() {
   const [resetting,setResetting] = useState(false);

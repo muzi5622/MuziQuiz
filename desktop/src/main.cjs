@@ -7,6 +7,8 @@ const server = require('./server.cjs');
 
 const CREATOR_URL = 'https://www.linkedin.com/in/m-muzammal-muzi5622/';
 const STAGE = '#1a1226';
+// Added by the page's "Open in browser" button (client/src/desktop.tsx).
+const OPEN_IN_BROWSER = '#open-in-browser';
 
 if (!app.requestSingleInstanceLock()) app.quit();
 app.setAppUserModelId('com.muzi.muziquiz');
@@ -41,6 +43,11 @@ function isOwnPage(url) {
 function openOutside(url) { if (/^https?:\/\//i.test(url)) void shell.openExternal(url); }
 app.on('web-contents-created', (_event, contents) => {
   contents.setWindowOpenHandler(({ url }) => {
+    if (url.endsWith(OPEN_IN_BROWSER)) {
+      const page = url.slice(0, -OPEN_IN_BROWSER.length);
+      if (isOwnPage(page)) void shell.openExternal(page);
+      return { action: 'deny' };
+    }
     if (isOwnPage(url)) return { action: 'allow', overrideBrowserWindowOptions: { width: 1280, height: 800, backgroundColor: STAGE, autoHideMenuBar: true, icon: path.join(__dirname, 'icon.png') } };
     openOutside(url);
     return { action: 'deny' };
@@ -83,11 +90,16 @@ async function about() {
   });
   if (response === 1) void shell.openExternal(CREATOR_URL);
 }
+// The page currently shown in the focused MuziQuiz window, or the host space.
+function openCurrentPageInBrowser() {
+  const current = (BrowserWindow.getFocusedWindow() ?? mainWindow()).webContents.getURL();
+  void shell.openExternal(isOwnPage(current) ? current : `${appOrigin()}/host`);
+}
 function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     { label: 'MuziQuiz', submenu: [
       { label: 'Host space', accelerator: 'CmdOrCtrl+H', click: () => { const window = mainWindow(); void window.loadURL(`${appOrigin()}/host`); window.focus(); } },
-      { label: 'Open in web browser', click: () => void shell.openExternal(`${appOrigin()}/host`) },
+      { label: 'Open this page in web browser', accelerator: 'CmdOrCtrl+Shift+B', click: () => openCurrentPageInBrowser() },
       { type: 'separator' },
       { label: 'Open data folder', click: () => void shell.openPath(userFolder()) },
       { label: 'Reset host password…', click: () => void resetPassword() },

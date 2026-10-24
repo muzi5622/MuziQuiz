@@ -8,6 +8,7 @@ import { LobbyConnection } from './lobby.js';
 import { HostQuestionControls } from './game.js';
 import { WelcomeLobby } from './players.js';
 import { advanceHost } from './host-transition.js';
+import { OpenInBrowser } from './desktop.js';
 
 export function HostSession({ sessionId }: { sessionId:string }) {
   const id = sessionId;
@@ -79,5 +80,5 @@ export function HostSession({ sessionId }: { sessionId:string }) {
     if (!socket || !connected || busy || !window.confirm('End this session now? The host will not be able to reopen it. Final scores will be published.')) return;
     setBusy(true); socket.volatile.timeout(5000).emit('host:end', { sessionId: id }, finish);
   }
-  return <section className="presentation-screen"><header className="presentation-toolbar"><Link to="/host">Library</Link>{lobby && <><strong className="presentation-title">{lobby.title}</strong><span className="presentation-pin">PIN {lobby.pin}</span></>}<LobbyConnection connected={connected}/>{lobby && lobby.state !== 'FINISHED' && <button disabled={busy || !connected} onClick={end}>Stop session</button>}{lobby?.state === 'FINISHED' && <a className="presentation-download" href={`/api/host/sessions/${id}/export`}>Download all player ranks and points CSV</a>}</header>{error && <div className="error" role="alert">{error} <button onClick={() => setRetry(value => value+1)}>Reconnect</button></div>}{!lobby && !error && <p role="status">Opening presentation...</p>}{lobby && <>{lobby.state === 'LOBBY' && <WelcomeLobby session={lobby}/>}<HostQuestionControls session={lobby} connected={connected} busy={busy} onAction={transition} onEnd={end}/></>}</section>;
+  return <section className="presentation-screen"><header className="presentation-toolbar"><Link to="/host">Library</Link><OpenInBrowser className="open-in-browser presentation-open-in-browser"/>{lobby && <><strong className="presentation-title">{lobby.title}</strong><span className="presentation-pin">PIN {lobby.pin}</span></>}<LobbyConnection connected={connected}/>{lobby && lobby.state !== 'FINISHED' && <button disabled={busy || !connected} onClick={end}>Stop session</button>}{lobby?.state === 'FINISHED' && <a className="presentation-download" href={`/api/host/sessions/${id}/export`}>Download all player ranks and points CSV</a>}</header>{error && <div className="error" role="alert">{error} <button onClick={() => setRetry(value => value+1)}>Reconnect</button></div>}{!lobby && !error && <p role="status">Opening presentation...</p>}{lobby && <>{lobby.state === 'LOBBY' && <WelcomeLobby session={lobby}/>}<HostQuestionControls session={lobby} connected={connected} busy={busy} onAction={transition} onEnd={end}/></>}</section>;
 }

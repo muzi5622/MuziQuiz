@@ -50,7 +50,7 @@ The easiest way to host. No Node.js or terminal needed.
 | Menu item | What it does |
 | --- | --- |
 | Host space | Back to the quiz library and controls. |
-| Open in web browser | Opens the host space in your normal browser. |
+| Open this page in web browser | Opens the page you're on in your normal browser (Ctrl+Shift+B). The **Open in browser ↗** button at the top of the app does the same. |
 | Open data folder | Opens `%APPDATA%\MuziQuiz` (database and settings). |
 | Reset host password… | Forgets the password so you can create a new one. Quizzes and results are kept. |
 | Full screen (projector) | F11 for the projector view. |
@@ -189,7 +189,7 @@ Built-in limits:
 
 **Known limits:** someone with several physical phones still gets 2 players on each; set `MAX_PLAYERS_PER_DEVICE=1` for serious competitions. The app runs on plain `http` over local Wi-Fi, so sign in to the host space on the laptop itself rather than from a phone.
 
-**Reserved creator name:** "MUZI" (and look-alikes such as "MUZl" or "MUZ1") is reserved. Typing it gives a random Player name instead. The real creator identity (gold skull avatar and Creator tag) needs a private join code whose SHA-256 hash is set in `RESERVED_JOIN_CODE_HASH`. It gives no host rights or points advantage. Keep the code private.
+**Reserved creator name:** "MUZI" (and look-alikes such as "MUZl" or "MUZ1") is reserved. Typing it gives a random Player name instead. The real creator identity (gold skull avatar and Creator tag) is claimed by typing the **private join code** as the nickname. A creator code is **built in**, so it works with no setup; only its SHA-256 hash is in the source. To change it, open **Creator identity (MUZI)** in the host space and save a new code: it works immediately, only its hash is stored, and **Use built-in code** switches back. `RESERVED_JOIN_CODE_HASH` in `.env` still works as an override. Codes are letters or numbers, one underscore, then 4–16 letters or numbers. It gives no host rights or points advantage. A short or patterned code can be recovered from its hash by trying every combination, so use a long random code if it must stay secret.
 
 ## 8. Settings
 
@@ -200,7 +200,7 @@ Everything works without settings. To change something, create a `.env` file: fo
 | `PORT` | 3000 | Port for the website and live connections. The desktop app tries the next ports if this one is busy. |
 | `DATA_DIR` | `./data` | Database folder (source version only; the desktop app uses `%APPDATA%\MuziQuiz\data`). |
 | `MAX_PLAYERS_PER_DEVICE` | 2 | Players one device may create per session (1–200). |
-| `RESERVED_JOIN_CODE_HASH` | not set | SHA-256 hash of the private code for the reserved MUZI identity. |
+| `RESERVED_JOIN_CODE_HASH` | built-in code | Optional override: SHA-256 hash of a different creator code. Easier: change it in the host space under **Creator identity (MUZI)**. |
 
 Never publish `.env`, the database or backups.
 
@@ -239,6 +239,7 @@ The internal name "localmenti" is kept for compatibility.
 | Port already in use | Close the other MuziQuiz window or program. `start-muziquiz.cmd` and the desktop app handle this automatically. |
 | Import fails | Read the error message: it must be version 2, have valid option IDs, a quiz-wide time of 5–120 seconds, and be under 512 KiB. |
 | Leaderboard doesn't animate again | A reveal you've already seen doesn't replay after a refresh. Use **Replay reveal**. |
+| Private join code rejected | In the host space, open **Creator identity (MUZI)** to see which code is active (built-in, set in the app, or `.env`), and save yours there if needed. If you tried many times, wait 15 minutes (5 attempts per device). |
 | Player lost their place | They must use the same browser and the same address; clearing browser data loses the saved player. |
 
 ## 12. Development
