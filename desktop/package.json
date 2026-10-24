@@ -1,0 +1,42 @@
+{
+  "name": "muziquiz-desktop",
+  "productName": "MuziQuiz",
+  "version": "0.1.0",
+  "description": "MuziQuiz host app for Windows. Players join from their phone browser by QR code or PIN.",
+  "author": "MUZI",
+  "private": true,
+  "main": "app/main.cjs",
+  "scripts": {
+    "stage": "node scripts/stage.mjs",
+    "start": "npm run stage && electron .",
+    "dist": "npm run stage && electron-builder --win nsis --x64 --publish never"
+  },
+  "dependencies": {
+    "better-sqlite3": "13.0.3"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "com.muzi.muziquiz",
+    "productName": "MuziQuiz",
+    "copyright": "Made by MUZI",
+    "directories": { "output": "release", "buildResources": "build" },
+    "files": ["app/**/*", "package.json"],
+    "npmRebuild": false,
+    "asar": true,
+    "asarUnpack": ["**/*.node"],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }], "icon": "build/icon.png" },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "MuziQuiz",
+      "runAfterFinish": true,
+      "artifactName": "MuziQuiz-Setup-${version}.exe"
+    }
+  }
+}

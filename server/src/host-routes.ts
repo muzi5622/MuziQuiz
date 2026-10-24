@@ -1,14 +1,23 @@
 import { randomBytes } from 'node:crypto';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import type Database from 'better-sqlite3';
 import { EmptyBodySchema, LoginSchema, MAX_IMPORT_BYTES, QuizDraftSchema, QuizFileSchema, QuizUpdateSchema } from '@localmenti/shared';
-import { authenticated, configured, cookieToken, hashToken, sessionCookie, SESSION_MS, verifyPassword } from './auth.js';
+import { authenticated, configured, cookieToken, hashToken, sessionCookie, SESSION_MS, setHostPassword, verifyPassword } from './auth.js';
+
+// First-run setup is only trusted from the host laptop itself, never over Wi-Fi.
+const isLoopback = (ip: string) => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip);
 import { createQuiz, getQuiz, listQuizzes, updateQuiz } from './quizzes.js';
 import type { LobbyService } from './lobby.js';
 import { registerHostLobbyRoutes } from './lobby-routes.js';
 
 export async function registerHostRoutes(app: FastifyInstance, db: Database.Database, lobby: LobbyService) {
   await app.register(async host => {
+    const signIn = (reply: FastifyReply, now: number) => {
+      const token = randomBytes(32).toString('hex');
+      db.prepare('DELETE FROM host_sessions WHERE expires_at <= ?').run(now);
+      db.prepare('INSERT INTO host_sessions (token_hash, expires_at) VALUES (?, ?)').run(hashToken(token), Date.now() + SESSION_MS);
+      return reply.header('Set-Cookie', [sessionCookie(token), sessionCookie('', 0).replace('Path=/', 'Path=/api/host')]).send({ authenticated: true });
+    };
     const attempts = new Map<string, { count: number; until: number }>();
     let globalAttempts = { count: 0, until: 0 };
     host.addHook('onRequest', async (request, reply) => {
@@ -19,7 +28,7 @@ export async function registerHostRoutes(app: FastifyInstance, db: Database.Data
         return reply.code(403).send({ error: 'Use this app from its own local address.' });
       }
       const path = request.url.split('?')[0];
-      if (path !== '/api/host/auth' && path !== '/api/host/login' && !authenticated(db, request.headers.cookie)) {
+      if (path !== '/api/host/auth' && path !== '/api/host/login' && path !== '/api/host/setup' && !authenticated(db, request.headers.cookie)) {
         return reply.code(401).send({ error: 'Host sign-in required.' });
       }
     });
@@ -33,10 +42,16 @@ export async function registerHostRoutes(app: FastifyInstance, db: Database.Data
       entry.count++; globalAttempts.count++; attempts.set(request.ip, entry);
       const parsed = LoginSchema.safeParse(request.body);
       if (!parsed.success || !await verifyPassword(db, parsed.data.password)) return reply.code(401).send({ error: 'Password not accepted.' });
-      const token = randomBytes(32).toString('hex');
-      db.prepare('DELETE FROM host_sessions WHERE expires_at <= ?').run(now);
-      db.prepare('INSERT INTO host_sessions (token_hash, expires_at) VALUES (?, ?)').run(hashToken(token), Date.now() + SESSION_MS);
-      return reply.header('Set-Cookie', [sessionCookie(token), sessionCookie('', 0).replace('Path=/', 'Path=/api/host')]).send({ authenticated: true });
+      return signIn(reply, now);
+    });
+    // Create the first host password from the laptop itself (desktop app / first run).
+    host.post('/setup', async (request, reply) => {
+      if (configured(db)) return reply.code(409).send({ error: 'A host password already exists. Sign in instead.' });
+      if (!isLoopback(request.ip)) return reply.code(403).send({ error: 'Create the host password on the host laptop itself.' });
+      const parsed = LoginSchema.safeParse(request.body);
+      if (!parsed.success) return reply.code(400).send({ error: 'Use a password of 12–128 characters.' });
+      await setHostPassword(db, parsed.data.password);
+      return signIn(reply, Date.now());
     });
     host.post('/logout', (request, reply) => {
       if (!EmptyBodySchema.safeParse(request.body ?? {}).success) return reply.code(400).send({ error: 'Logout does not accept any fields.' });

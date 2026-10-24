@@ -1,93 +1,111 @@
 # MuziQuiz
 
-MuziQuiz is an open-source, offline-first interactive quiz platform for classrooms, workshops, and events. Host real-time quizzes over a local network without internet access, featuring speed-based scoring, live leaderboards, and instant results.
+**Live quizzes for classrooms, workshops and events, over local Wi-Fi, with no internet and no accounts.**
 
-One Windows laptop serves the participant website, host controls, QR presentation, API and WebSocket from one Node.js process. Participants use their own browser on the same LAN. No registration, online account, CDN, cloud database, analytics or event-day internet connection is required.
+One Windows laptop runs everything: the host controls, the projector screen and the player website. Players scan a QR code or type a PIN in their phone's browser. There is nothing to install for players, no sign-up, no cloud and no internet needed on event day.
 
-## What it includes
+## Highlights
 
-- Saved quizzes, MCQs, unscored polls, quiz duplication and versioned JSON import/export.
-- Host password protection, one live event at a time, six-digit PINs and locally generated QR codes.
-- Animated avatar arrivals, live connection counts and automatic unique nickname suffixes.
-- Question-only reading period, one-tap answers and server-authoritative speed scoring.
-- Manual question/reveal/leaderboard controls, animated score graphs and rank movement.
-- Competition-wide Fastest recognition, private personal standings, final results and all-player CSV exports.
-- Refresh/reconnect recovery, persisted sessions, finished-event history and backed-up history reset.
+- **Two ways to host.** Install the Windows desktop app (`MuziQuiz-Setup.exe`), or run it from source with Node.js.
+- **Players use their browser.** Join by QR code, PIN or URL on the same Wi-Fi. Reconnects resume where they left off.
+- **Quiz-show answer colours.** A, B, C and D keep the same colour on phones, the projector and the answer chart.
+- **Speed scoring the server controls.** Correct and faster earns more points. Times are measured by the server, never by phones.
+- **Animated leaderboard.** Points count up, bars grow and players slide up or down. The top 10 show first, and you can page through everyone with ← 1 2 3 → or the arrow keys.
+- **Winners reveal.** When the quiz ends, the projector reveals 3rd, 2nd and then 1st on a podium, with confetti.
+- **Shareable result cards.** Every player can save a picture with the event name and their rank out of N, with medals and effects for the top 3. The host can save a "Top 3" podium picture.
+- **Event names.** Shown on the waiting screen and printed on every result card.
+- **Fair play.** One device can't run an army of fake players, look-alike names can't impersonate others, and the "Fastest" award can't be won by skipping questions.
+- **Fully offline.** No CDN, analytics or cloud database. All data stays in SQLite on the host laptop.
 
-## 1. Requirements
+## Contents
 
-- Windows laptop with Node.js **22.13 or newer** and npm. Check using `node --version` and `npm --version`.
-- Initial internet access to install Node.js and npm dependencies. Download/extract or clone this project onto the laptop first.
-- A trusted router/access point connecting the laptop and participant devices. Internet service on that network is optional.
-- A current browser with JavaScript, cookies and local storage enabled. Projector/display is optional.
+1. [Quick start: Windows desktop app](#1-quick-start-windows-desktop-app)
+2. [Run from source (Node.js)](#2-run-from-source-nodejs)
+3. [Set up the Wi-Fi network](#3-set-up-the-wi-fi-network)
+4. [Create or import a quiz](#4-create-or-import-a-quiz)
+5. [Run an event](#5-run-an-event)
+6. [Scoring, Fastest and ties](#6-scoring-fastest-and-ties)
+7. [Fair play and security](#7-fair-play-and-security)
+8. [Settings](#8-settings)
+9. [Event-day checklist](#9-event-day-checklist)
+10. [History, backups and updates](#10-history-backups-and-updates)
+11. [Troubleshooting](#11-troubleshooting)
+12. [Development](#12-development)
 
-For larger events, use a dedicated capable Wi-Fi access point, sufficient DHCP capacity and preferably Ethernet between laptop and router. The application has a 200-identity session limit and tested simulated load; this is **not a guarantee of 200 physical Wi-Fi devices**. Windows Mobile Hotspot is not a 200-device solution.
+---
 
-## 2. First installation
+## 1. Quick start: Windows desktop app
 
-Open PowerShell in the extracted project directory:
+The easiest way to host. No Node.js or terminal needed.
+
+1. Download **`MuziQuiz-Setup-<version>.exe`** from this repository's **Releases** page, or [build it yourself](#building-the-desktop-installer).
+2. Run it and choose where to install. It adds desktop and Start menu shortcuts.
+   - Windows may show **"Windows protected your PC"** because the installer is not code-signed. Choose **More info → Run anyway**.
+3. On first launch, **create your host password** (at least 12 characters). This only works on the host laptop itself; players on Wi-Fi can't set it.
+4. When Windows Firewall asks, allow MuziQuiz on **Private networks**, otherwise phones can't connect.
+5. Create a quiz, start a session, and show the QR code. Players join from their phone browser.
+
+**App menu**
+
+| Menu item | What it does |
+| --- | --- |
+| Host space | Back to the quiz library and controls. |
+| Open in web browser | Opens the host space in your normal browser. |
+| Open data folder | Opens `%APPDATA%\MuziQuiz` (database and settings). |
+| Reset host password… | Forgets the password so you can create a new one. Quizzes and results are kept. |
+| Full screen (projector) | F11 for the projector view. |
+| Player join addresses… | Lists the Wi-Fi addresses players can open. |
+
+The app uses port **3000**, or the next free port up to 3009. If you quit while a quiz is live, it asks first, because players would be disconnected.
+
+> **Moving from the source version?** Before the app's first launch, copy `data\localmenti.sqlite` into `%APPDATA%\MuziQuiz\data\` to keep your quizzes, password and history. Copy any settings from your `.env` into `%APPDATA%\MuziQuiz\.env`.
+
+## 2. Run from source (Node.js)
+
+Requirements: Windows with **Node.js 22.13 or newer**, and internet access once to install dependencies.
 
 ```powershell
 cd C:\path\to\MuziQuiz
 npm install
 npm run build
-npm run setup:host
 npm run start
 ```
 
-The password setup command asks for and confirms a **12-128 character host password**. Input is hidden. There is no default password. Passwords are stored only as salted hashes in SQLite.
+Open **http://localhost:3000/host** on the laptop. On first visit it asks you to create the host password (you can also run `npm run setup:host` in a terminal). Players use the laptop's Wi-Fi address instead of `localhost`.
 
-Open **http://localhost:3000/host** and sign in. Participants use the laptop's LAN address instead of localhost. Keep the server terminal open; stop cleanly with **Ctrl+C**.
+**Windows shortcut:** double-click **`start-muziquiz.cmd`**. It stops any previous MuziQuiz server on the same port, starts a fresh one, and opens the browser when it's ready. Keep that window open during the event; close it or press Ctrl+C to stop.
 
-If installation fails while building better-sqlite3, use a supported Node.js version and retry installation. Environments without a compatible prebuilt binary may require the Windows C++ build toolchain/Python used by node-gyp. Preserve the complete installation on the event laptop; do not depend on downloading packages during an event.
+## 3. Set up the Wi-Fi network
 
-## 3. Optional configuration
+1. Connect the laptop and the players' phones to the **same trusted Wi-Fi or LAN**. Avoid guest networks with "client isolation".
+2. Start MuziQuiz. When you start a session, choose the adapter players are on (for example `Wi-Fi · 192.168.1.4`). The lobby shows that address and a QR code.
+3. Test from one phone: `http://<laptop-ip>:3000/join`.
 
-Defaults work without a configuration file. If you need changes, create `.env` from `.env.example` **only if .env does not already exist**:
-
-```powershell
-if (!(Test-Path -LiteralPath .env)) { Copy-Item -LiteralPath .env.example -Destination .env }
-```
-
-| Setting | Default | Purpose |
-| --- | --- | --- |
-| PORT | 3000 | HTTP and Socket.IO share this TCP port. |
-| DATA_DIR | ./data | Persistent SQLite directory; relative to the project root. |
-| RESERVED_JOIN_CODE_HASH | unset | Optional SHA-256 hash of a private reserved-identity claim code. |
-
-Restart after configuration changes. Run commands from the project root. Never publish `.env`, live databases or backups. Do not put host passwords or the private claim code into frontend files or exported quizzes.
-
-MUZI is reserved case-insensitively. An ordinary entry of that name receives a generated Player name. A server-verified private code assigns MUZI's exclusive skull/Creator identity; it grants no host permission or score advantage. Only one such identity may join each event, and its browser token restores it. Keep the configured code private: anyone who knows it can claim that identity. The actual code is intentionally omitted here.
-
-## 4. Set up the LAN
-
-1. Connect laptop and audience devices to the same trusted Wi-Fi/LAN. Avoid guest networks with client isolation.
-2. Run `ipconfig` on the laptop. Identify the active Wi-Fi/Ethernet **IPv4 address**. Ignore VPN/virtual adapters unless those are intentionally your audience network.
-3. Start MuziQuiz. The terminal lists candidate addresses; verify the correct adapter. `0.0.0.0` means the server listens on all interfaces and is not a browser destination.
-4. Test from a phone: `http://<HOST_LAN_IP>:3000/join`. Example only: `http://192.168.50.10:3000/join`.
-5. Allow local peer communication on the router. Disable AP/client isolation for this network, avoid captive portal redirects and ensure enough DHCP addresses.
-
-### Windows Firewall
-
-Set the trusted event network to the **Private** profile in Windows settings. Allow inbound TCP on the configured port, Private profile only, preferably restricted to LocalSubnet. After reviewing it, an administrator can create this rule in elevated PowerShell:
+**Windows Firewall:** set the event network to the **Private** profile and allow MuziQuiz on Private networks. The desktop app asks automatically. For the source version, an administrator can add a rule:
 
 ```powershell
 New-NetFirewallRule -DisplayName "MuziQuiz LAN TCP 3000" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3000 -Profile Private -RemoteAddress LocalSubnet
 ```
 
-Change the rule and URLs if you change PORT. Do not disable the firewall globally. The app does not change network/firewall settings automatically. Use a trusted isolated LAN; do not configure public tunnels, router port forwarding or UPnP.
+Don't disable the firewall globally, and don't expose MuziQuiz to the internet (no port forwarding or tunnels).
 
-## 5. Create or import a quiz
+**Capacity:** a session allows up to 200 players. Real capacity depends on your Wi-Fi access point; for big rooms, use a proper access point (not a phone hotspot) and Ethernet between the laptop and router.
 
-Visit `/host`. Create a quiz, set its title and the **global answer time** (10-120 seconds for every question), then add/reorder questions. A quiz supports up to 100 questions, each with 2-6 choices. Scored MCQs have one correct choice and 1-10,000 maximum points; the default is 1,000. Polls have no correct choice and award zero points.
+## 4. Create or import a quiz
 
-Valid edits autosave after a short pause. Check the save status; use **Save quiz & return** to save and return to the library. Invalid fields or failed requests remain visible for correction/retry. A stale edit from another tab is rejected to prevent overwriting newer changes. Unsaved browser drafts are not durable after closing the tab.
+In the host space, choose **＋ Create quiz**:
 
-**Import JSON** opens instructions with the required structure collapsed by default. Choose a file or **Paste JSON**. **Copy AI prompt** copies the quiz-writing/conversion prompt only; replace its topic/audience/count placeholders and check the generated facts. MuziQuiz does not send AI requests. On LAN HTTP, clipboard permissions may require the provided copy fallback or selecting the prompt and pressing Ctrl+C.
+- **Answer time** applies to every question: **5–120 seconds**. There is a separate 3–5 second reading time before options appear.
+- Up to **100 questions**, each with **2–6 choices**.
+- **Scored questions** have one correct choice and 1–10,000 maximum points (default 1,000).
+- **Polls** have no correct choice and award no points.
+- Edits save automatically. **Save quiz & return** takes you back to the library.
 
-### Supported JSON format
+### Import JSON, or write a quiz with AI
 
-Only **version 2** is accepted. Limit: **512 KiB UTF-8**. Import creates a new saved quiz. Unknown fields, invalid correct-option IDs, obsolete versions and oversized input are rejected.
+**Import JSON** accepts a file or pasted text. **Copy AI prompt** copies a ready-made prompt: fill in the topic, audience and number of questions, paste it into any AI chat, and paste the answer back. The AI is asked to return the JSON in one ```` ```json ```` code block, and MuziQuiz accepts that code block as-is. MuziQuiz itself never contacts an AI service. Always check the facts.
+
+Only **version 2** files up to **512 KiB** are accepted:
 
 ```json
 {
@@ -115,110 +133,153 @@ Only **version 2** is accepted. Limit: **512 KiB UTF-8**. Import creates a new s
 }
 ```
 
-For a poll, use `type: "poll_mcq"`, `correctOptionId: null` and `basePoints: 0`. Put durationSeconds on the quiz only. Titles: up to 120 characters; descriptions/question text/explanations: up to 2,000; choice text: up to 300. Use plain text, JSON numbers and double quotes, without comments or trailing commas.
+For a poll, use `"type": "poll_mcq"`, `"correctOptionId": null` and `"basePoints": 0`. `durationSeconds` (5–120) belongs to the quiz, not to individual questions. Limits: title 120 characters, question text and explanations 2,000, choices 300.
 
-## 6. Run an event
+## 5. Run an event
 
-1. Save a quiz containing at least one question.
-2. In the library's session launcher, choose the quiz, reachable LAN adapter and **3-5 second** question reading period. Start the session.
-3. Click **Open session / Return to lobby** to open `/present/:pin`. The signed-in host controls the event on this same full-screen presentation page. Anonymous viewers of that URL are read-only.
-4. Display the QR code, large IP address and PIN. Participants open the join page, enter the PIN and a nickname, or scan the QR. Nicknames accept 1-24 Unicode letters/numbers, without spaces/symbols; duplicates receive numeric suffixes. Avatars/colors are server-selected and unique as combinations within the session limit. Emoji shapes may repeat in different colors.
-5. Start the first question. Both host and phones see the question alone during reading time. Options are withheld by the server, then appear together; the full answer timer starts at release.
-6. A participant taps once to submit and lock an answer. Their receipt shows server-measured response time. Reloading cannot change an accepted answer.
-7. When answering closes, reveal the answer. The host sees room response distributions; participants see their own outcome. Scores stay hidden until standings are published.
-8. Choose **Show leaderboard** or move directly to the next question. Skipping standings holds pending scores until a later publication. A reveal briefly holds prior scores, counts totals and growing graph bars, then moves ranks. **Replay reveal** repeats the published animation; reduced-motion settings show final values immediately.
-9. **Stop session / Finish** publishes final totals. Download all player ranks/points as CSV from the host's final screen. Finished-session history retains results after restart and original-quiz deletion.
+1. **Start a session.** In the library, choose the quiz, the players' Wi-Fi adapter and the reading time. Optionally type an **Event name**, for example "Friday Science Night – Room 4"; it appears on the waiting screen and on every result card.
+2. **Open the lobby.** Click **Open session** and put it on the projector (F11 for full screen). It shows the event name, the join address, the PIN and a QR code, and players appear as they join.
+3. **Players join** at `/join` or by scanning the QR code. Opening a QR link fills in the PIN, but they can still change it. Nicknames are 1–24 letters or numbers in one alphabet; duplicates get a number added.
+4. **Play.** For each question, players read first, then the coloured answer buttons appear and the timer starts. One tap locks the answer. Then the host closes answering, reveals the answer and the answer chart, and optionally shows the **leaderboard**.
+5. **Leaderboard.** Points count up, bars grow, then players move up or down. The **top 10** show first; use **← 1 2 3 →** or the **arrow keys** (a presentation clicker works) to page through everyone. **Replay reveal** plays the animation again.
+6. **Finish the quiz.** The projector plays the **winners reveal**: 3rd, then 2nd, a pause, then the winner with confetti. **See full leaderboard** closes it; **Replay winners** plays it again.
+7. **Pictures to share:**
+   - **Players** tap **Share my result** on their phone to get a portrait image with the event name, their avatar and name, their rank out of N, their points and correct answers. The top 3 get gold, silver or bronze rings, light rays, confetti and a medal ribbon.
+   - **The host** taps **Share top 3** on the final leaderboard, or later from **Recent finished sessions**, to get a podium picture of the winners.
+   - Images are created on the device and work offline. **Save image** always works (on phones you can also press and hold the picture). **Share** appears where the browser allows it; phones only allow direct sharing on secure (`https`) pages, so over local Wi-Fi most people will save first.
+8. **Export results.** Download the CSV of all players' ranks and points from the final screen or from **Recent finished sessions**.
 
-The host advances manually; deadlines do not auto-advance questions. Only one session is active at once. A session snapshots its quiz, so later authoring changes do not change an event already started. The old `/host/session/:id` address redirects to the presentation page. Keep the host signed in using the same browser/origin used to open host controls.
+Phones only ever see their **own** rank and points ("#7 of 26 players"); the full ranking stays on the projector. The host moves through the quiz manually; timers never jump to the next question by themselves. One session runs at a time, and it uses a frozen copy of the quiz, so editing the quiz during an event doesn't affect it.
 
-### Scoring and recognition
+### Reconnecting
 
-Every scored question uses correctness **and** speed. For a correct answer received by the server deadline:
+Players resume by opening the same address in the **same browser**. Their player is saved in that browser, so a refresh, a dropped connection or a server restart puts them back on the current question. Missed questions score 0. New players can only join while the lobby is open.
+
+## 6. Scoring, Fastest and ties
+
+A correct answer received before the deadline earns:
 
 ```text
-points = round(basePoints * (0.5 + 0.5 * max(0, 1 - responseMs / durationMs)))
+points = round(basePoints × (0.5 + 0.5 × max(0, 1 − responseTime / answerTime)))
 ```
 
-Time is measured by the server from options release. For a 20-second/1,000-point question: 0s = 1,000; 5s = 875; 10s = 750; 15s = 625; exactly 20s = 500 if received by the deadline. Late, incorrect, missing and poll answers earn zero. Local wireless latency can affect scores.
+The clock starts when the options appear and is measured on the server. For a 1,000-point, 20-second question: answering at 0 s earns 1,000, at 10 s 750, and at exactly 20 s 500. Wrong, missing, late and poll answers earn 0. Wi-Fi congestion can affect timing.
 
-Sort by score descending, correct answers descending, then cumulative valid scored-answer time ascending. Exact ties share competition rank; stable joined-at/id ordering determines display position within the tie. Polls never affect scoring/tie breaks.
+**Ranking:** highest score, then most correct answers, then lowest total answer time. Exact ties share a rank.
 
-**Fastest** recognizes the lowest average correct-answer response time across all published scored questions, with exact ties sharing the tag. Wrong answers, polls and unpublished rounds are excluded. This badge does not alter points or ranks. Projectors show top-ten standings; participants see only their own rank/points. Final results include all participants in the CSV.
+**Fastest award:** the player with the lowest average answer time across **all** scored questions. A wrong or missing answer counts as the full answer time, so skipping questions can never help, and you need at least one correct answer to qualify. Ties share the award. It doesn't change points or ranks.
 
-### Reconnect and restart
+## 7. Fair play and security
 
-Use the **same browser and exact IP/port** to resume. The reconnect secret is stored in that browser's localStorage, with only its hash stored server-side. Entering a saved PIN offers Resume current question. A returning player restores the current stage/deadline, accepted answers and published score; missed rounds earn zero.
+MuziQuiz was tested against cheating attempts. Phones cannot:
 
-New identities join only during the lobby. Clearing browser storage, switching browser/device or changing origins loses access to the saved identity; a nickname alone cannot reclaim it. Multiple tabs sharing one token represent one player. Removed players cannot reuse their revoked token.
+- send their own time, points or score
+- see the answer options during reading time, or the correct answer before the reveal (in their own data, the projector feed or the API)
+- learn from their receipt whether an answer was right before the reveal
+- answer twice, change an answer, answer after the deadline, or answer a question that isn't live
+- take over another player with a guessed token, use host controls without the password, or send requests from another website
+- join after the quiz has started
 
-A server restart restores persisted sessions. Expired questions stay closed; timers never restart. A silent network failure can take several seconds to detect. Keep laptop clock, network, power and sleep settings stable during play.
+Built-in limits:
 
-## 7. Finished history and reset
+- **Players per device:** each device (IP address) can create at most **2 players per session** (setting: `MAX_PLAYERS_PER_DEVICE`). This stops one laptop from running fake players that cover every answer. Kicked players still count, and the host laptop is exempt for testing.
+- **Kicks free the room:** removing a player frees their place, so fake players can't permanently fill the room.
+- **Look-alike names:** names that mix alphabets (for example a Cyrillic "М" inside "MUZI") are rejected.
+- **Host password:** a minimum of 12 characters, stored only as a salted hash. Sign-in attempts are rate-limited. The first password can only be created from the host laptop itself.
 
-In the library, expand **Recent finished sessions** to view saved standings or export CSVs. It stays collapsed initially and the list is bounded.
+**Known limits:** someone with several physical phones still gets 2 players on each; set `MAX_PLAYERS_PER_DEVICE=1` for serious competitions. The app runs on plain `http` over local Wi-Fi, so sign in to the host space on the laptop itself rather than from a phone.
 
-**Reset finished-session data** asks for confirmation, creates a local SQLite backup, then clears all finished events and their players, answers and results. It keeps saved quizzes, host credentials and the active event. Finished-data reset cannot be undone from the interface; restore its backup if needed. Do not reset history until required exports are saved.
+**Reserved creator name:** "MUZI" (and look-alikes such as "MUZl" or "MUZ1") is reserved. Typing it gives a random Player name instead. The real creator identity (gold skull avatar and Creator tag) needs a private join code whose SHA-256 hash is set in `RESERVED_JOIN_CODE_HASH`. It gives no host rights or points advantage. Keep the code private.
 
-## 8. Event-day checklist: internet disconnected
+## 8. Settings
 
-1. Complete installation/build/password setup before event day.
-2. Connect the prepared laptop and phones to the event LAN; unplug WAN/internet while keeping the LAN active.
-3. Run `npm run start` or double-click **start-muziquiz.cmd**. No rebuild or npm install is needed.
-4. Verify the current LAN IP, firewall profile/rule and selected session adapter.
-5. Open host controls, create a trial lobby and test QR/PIN, one answer, reveal and reconnect on at least three real phones.
-6. Keep the terminal open, prevent laptop sleep and use reliable power. Use full-screen browser mode for projection if desired.
+Everything works without settings. To change something, create a `.env` file: for the source version, copy `.env.example` to `.env` in the project folder; for the desktop app, use `%APPDATA%\MuziQuiz\.env`. Restart afterwards.
 
-The legacy start-localmenti.cmd launcher remains compatible. Do not use the Vite development server for an event; production serves everything from the single configured port.
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | 3000 | Port for the website and live connections. The desktop app tries the next ports if this one is busy. |
+| `DATA_DIR` | `./data` | Database folder (source version only; the desktop app uses `%APPDATA%\MuziQuiz\data`). |
+| `MAX_PLAYERS_PER_DEVICE` | 2 | Players one device may create per session (1–200). |
+| `RESERVED_JOIN_CODE_HASH` | not set | SHA-256 hash of the private code for the reserved MUZI identity. |
 
-## 9. Data backup, restore and updates
+Never publish `.env`, the database or backups.
 
-Default database: **data/localmenti.sqlite**, using SQLite WAL. Historical database filenames, npm workspace scopes and browser storage keys retain their internal localmenti names for compatibility; the displayed application is MuziQuiz.
+## 9. Event-day checklist
 
-For a manual backup, stop the server with Ctrl+C, then copy the **entire data directory**, including any WAL/SHM files, to private backup storage. Keep a separate private copy of .env. Never copy only the main database file while the server is running. History reset creates a consistent online SQLite snapshot under data/backups.
+1. Install the desktop app (or install and build the source version), create the host password and prepare your quizzes **before** event day.
+2. Connect the laptop and phones to the event Wi-Fi. Internet can be unplugged.
+3. Start MuziQuiz (the desktop shortcut or `start-muziquiz.cmd`).
+4. Check that the session uses the right Wi-Fi adapter and that the firewall allows Private networks.
+5. Run a test lobby with at least three real phones: join, answer, reveal, leaderboard and a reconnect.
+6. Keep the laptop plugged in and stop it from sleeping.
 
-To restore: stop the app, preserve the current data directory separately, restore the desired stopped-directory backup, then restart. For a reset-generated snapshot, while stopped, restore that snapshot as localmenti.sqlite in a clean data directory; do not combine it with unrelated WAL/SHM files. Restoring an older snapshot replaces data created since it was taken. Run `npm run setup:host` after restore to rotate the password and invalidate restored host sessions.
+## 10. History, backups and updates
 
-Before updating source/dependencies: stop, back up, preserve .env/data, install dependencies if changed, rebuild and restart. Migrations run automatically. Do not delete data to solve an installation issue.
+**Recent finished sessions** in the library keep every finished event, even after a restart or after deleting the quiz. From there you can view the final standings, download the CSV and make the **Top 3** picture.
 
-## 10. Troubleshooting
+**Reset finished-session data** clears all finished events (players, answers and results) after making a backup in `data/backups`. Quizzes, the host password and any live session are kept. Export what you need first.
 
-| Symptom | Check |
+**Database location:**
+- Source version: `data/localmenti.sqlite`
+- Desktop app: `%APPDATA%\MuziQuiz\data\localmenti.sqlite`
+
+The internal name "localmenti" is kept for compatibility.
+
+**Backups:** stop MuziQuiz, then copy the **whole data folder**, including any `-wal`/`-shm` files. Don't copy the database while the app is running. To restore, stop MuziQuiz and put the backed-up folder back. Database upgrades run automatically when MuziQuiz starts.
+
+## 11. Troubleshooting
+
+| Problem | What to check |
 | --- | --- |
-| Phone cannot connect | Same LAN, correct IPv4/port, server running, Private firewall rule, no AP isolation/VPN/captive portal. localhost on a phone means that phone. |
-| QR opens the wrong address | Select the actual audience-network adapter; a listed virtual IP may be unreachable. Recheck after DHCP/IP changes. |
-| Host controls go to login | Sign in at the same origin as the presentation, allow cookies and reopen the session. Host sessions expire after 12 hours. |
-| 403 response | Use matching app origin for API/socket requests; do not mix localhost and different IPs/ports or send cross-origin requests. |
-| Save/import fails | Read the error, check required fields/option IDs, version 2, global duration and 512 KiB limit. Resolve stale edits before saving. |
-| Clipboard unavailable | On HTTP LAN, use the selected prompt's Ctrl+C/device Copy fallback. |
-| Animation is static | Use Replay reveal for already watched standings. Check the device's reduced-motion setting. Scores/bars only grow when newly published points increase. |
-| Room already active | Open or stop the current session in the library before starting another. Deleting its quiz ends that room while retaining results. |
-| Forgotten host password | Stop the server, run npm run setup:host in an interactive terminal, restart and sign in again. |
-| Port already in use | Stop the previous MuziQuiz process or choose a free PORT and update firewall/URLs. |
-| Reconnect lost identity | Return using the original browser and exact origin; avoid clearing its storage. A nickname cannot substitute for the token. |
+| Phones can't connect | Same Wi-Fi, correct address and port, MuziQuiz running, firewall allows Private networks, no client isolation, VPN or captive portal. `localhost` on a phone means the phone itself. |
+| QR code opens the wrong address | Choose the adapter players are actually on when starting the session. |
+| "This device already joined 2 times" | The per-device limit. Players should resume in the browser they first joined with, or the host can raise `MAX_PLAYERS_PER_DEVICE`. |
+| Forgotten host password | Desktop app: **MuziQuiz → Reset host password…**. Source version: stop the server, run `npm run setup:host`, then start again. |
+| Host space keeps asking to sign in | Open the host space at the same address as the session, and allow cookies. Host sign-ins last 12 hours. |
+| Port already in use | Close the other MuziQuiz window or program. `start-muziquiz.cmd` and the desktop app handle this automatically. |
+| Import fails | Read the error message: it must be version 2, have valid option IDs, a quiz-wide time of 5–120 seconds, and be under 512 KiB. |
+| Leaderboard doesn't animate again | A reveal you've already seen doesn't replay after a refresh. Use **Replay reveal**. |
+| Player lost their place | They must use the same browser and the same address; clearing browser data loses the saved player. |
 
-## 11. Development and validation
+## 12. Development
 
-TypeScript npm workspaces: client/ (Vite + React), server/ (Fastify + Socket.IO + better-sqlite3), shared/ (Zod contracts). No runtime cloud service is required.
+TypeScript npm workspaces:
+
+| Folder | Contents |
+| --- | --- |
+| `client/` | Vite + React screens (host, projector, phones) |
+| `server/` | Fastify + Socket.IO + better-sqlite3 |
+| `shared/` | Zod schemas and types shared by both |
+| `desktop/` | Electron wrapper and Windows installer |
+| `scripts/` | Smoke, load and offline-asset checks |
 
 ```powershell
 npm run typecheck
 npm run lint
 npm test
 npm run build
-npm run smoke
 npm run audit:offline
-node scripts/lan-smoke.mjs http://<HOST_LAN_IP>:3000
-npm run test:load
+npm run smoke                       # with the server running
+node scripts/lan-smoke.mjs http://<laptop-ip>:3000
+npm run test:load                   # 50, 100 and 200 simulated players
 ```
 
-Start the production server before smoke checks. Load tests use isolated temporary databases/server processes with 50, 100 and 200 simulated clients, report p50/p95 acknowledgment latency, failures and memory, and leave event data untouched. See docs/LOAD-RESULTS.json and the validation reports in docs/. Loopback simulation does not certify physical Wi-Fi capacity. Physical venue testing, three-phone acceptance and WAN-unplugged checks remain necessary; automated DOM checks do not establish projector animation smoothness.
+Pages: `/join`, `/s/:pin`, `/host`, `/host/login`, `/host/quizzes/:id`, `/present/:pin` and `/health`.
 
-Routes: /join, /s/:pin, /host/login, /host, /host/quizzes/:id, /present/:pin and /health. Health does not expose credentials. Server validation enforces deadlines, answer uniqueness, strict request fields and host authorization; clients do not choose scores, timings, roles or avatars. CSV output escapes spreadsheet formula prefixes. Keep data/backups private: they contain participant names, results and credential/token hashes.
+### Building the desktop installer
 
-## Licensing
+```powershell
+npm run desktop
+```
 
-A distribution license has not yet been selected in this repository. Add an appropriate LICENSE before publishing an open-source release; dependency licenses apply separately. The interface and assets are original and do not use Mentimeter branding or proprietary artwork.
+This builds the project, bundles the server into the desktop app, and creates **`desktop/release/MuziQuiz-Setup-<version>.exe`**. It needs internet the first time, to download Electron.
+
+The installer is about 130 MB, which is over GitHub's file-size limit, so **don't commit it**. Upload it as a **GitHub Release** asset instead; `desktop/app/` and `desktop/release/` are already in `.gitignore`. To change the version, edit `version` in `desktop/package.json`.
+
+## License
+
+No license has been chosen yet. Add a `LICENSE` file before publishing an open-source release; dependency licenses apply separately. The design and assets are original and don't use any other quiz product's branding.
 
 ---
 
-Made by **MUZI**
+Made by [**MUZI**](https://www.linkedin.com/in/m-muzammal-muzi5622/)

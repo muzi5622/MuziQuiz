@@ -6,3 +6,5 @@ data/
 test-results/
 
 .reference/
+desktop/app/
+desktop/release/

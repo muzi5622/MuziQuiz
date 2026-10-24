@@ -20,6 +20,7 @@
     "smoke": "node scripts/lan-smoke.mjs",
     "test:load": "node scripts/load-test.mjs",
     "audit:offline": "node scripts/offline-audit.mjs",
+    "desktop": "npm run build && cd desktop && npm install --no-audit --no-fund && npm run dist",
     "setup:host": "npm run build -w shared && npm run build -w server && node --env-file-if-exists=.env server/dist/setup-host.js"
   },
   "devDependencies": {

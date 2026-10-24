@@ -138,4 +138,19 @@ describe('host authoring API', () => {
     for (let attempt = 0; attempt < 8; attempt++) expect((await request(app, 'POST', '/login', '', { password: 'wrong-password-123' })).statusCode).toBe(401);
     expect((await request(app, 'POST', '/login', '', { password })).statusCode).toBe(429);
   });
+  it('creates the first host password only from the host laptop, and only once', async () => {
+    const f = await fixture(false);
+    const setup = (remoteAddress: string, body: unknown) => f.app.inject({ method:'POST', url:'/api/host/setup', remoteAddress, headers, payload:body as object });
+    expect((await f.app.inject({ url:'/api/host/auth', headers })).json()).toEqual({ configured:false, authenticated:false });
+    const fromWifi = await setup('192.168.1.50', { password:'wifi-takeover-pass' });
+    expect(fromWifi.statusCode).toBe(403);
+    expect((await setup('127.0.0.1', { password:'short' })).statusCode).toBe(400);
+    const created = await setup('127.0.0.1', { password:'my-new-host-password' });
+    expect(created.statusCode).toBe(200);
+    const cookie = (created.headers['set-cookie'] as string[])[0].split(';')[0];
+    expect((await f.app.inject({ url:'/api/host/auth', headers:{ ...headers, cookie } })).json()).toEqual({ configured:true, authenticated:true });
+    expect((await setup('127.0.0.1', { password:'another-password-1' })).statusCode).toBe(409);
+    expect((await f.app.inject({ method:'POST', url:'/api/host/login', remoteAddress:'192.168.1.50', headers, payload:{ password:'my-new-host-password' } })).statusCode).toBe(200);
+  });
 });
+

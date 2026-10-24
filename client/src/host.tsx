@@ -54,18 +54,28 @@ export function HostArea() {
 }
 function Login({ configured, onLogin }: { configured: boolean; onLogin: () => void }) {
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   async function submit(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError('');
-    try { await api('/login', 'POST', { password }); onLogin(); }
+    try {
+      if (!configured && password !== confirm) throw new Error('The two passwords do not match.');
+      await api(configured ? '/login' : '/setup', 'POST', { password }); onLogin();
+    }
     catch (error) { setError(message(error)); }
-    finally { setBusy(false); setPassword(''); }
+    finally { setBusy(false); setPassword(''); setConfirm(''); }
   }
-  return <section className="login-layout"><div><p className="kicker">FOR THE PERSON BRINGING EVERYONE TOGETHER</p><h1>Your room.<br/>Your questions.</h1><p className="intro">A little preparation. A lot of participation. Keep your quiz library here, on this laptop.</p></div><form className="login-card" onSubmit={submit}><span className="kicker">HOST SIGN-IN</span><h2>Welcome back.</h2>{configured ? <>
+  return <section className="login-layout"><div><p className="kicker">FOR THE PERSON BRINGING EVERYONE TOGETHER</p><h1>Your room.<br/>Your questions.</h1><p className="intro">A little preparation. A lot of participation. Keep your quiz library here, on this laptop.</p></div><form className="login-card" onSubmit={submit}><span className="kicker">HOST SIGN-IN</span><h2>{configured ? 'Welcome back.' : 'Create your host password'}</h2>{configured ? <>
     <label htmlFor="host-password">Host password</label><input autoComplete="current-password" id="host-password" type="password" minLength={12} maxLength={128} required value={password} onChange={event => setPassword(event.target.value)}/>
     <p className="hint">Use the password configured on this laptop.</p><button className="button" disabled={busy}>{busy ? 'Signing in…' : 'Open host space ↗'}</button>
-  </> : <><p>Set your host password in a terminal on this laptop:</p><code>npm run setup:host</code><p className="hint">Then reload this page. Password setup is available only from the local terminal.</p><button type="button" onClick={() => window.location.reload()}>Check again</button></>}
+  </> : <>
+    <p className="hint">First time on this laptop. Choose a password of at least 12 characters; you will use it to open the host space.</p>
+    <label htmlFor="host-password">New host password</label><input autoComplete="new-password" id="host-password" type="password" minLength={12} maxLength={128} required value={password} onChange={event => setPassword(event.target.value)}/>
+    <label htmlFor="host-password-confirm">Type it again</label><input autoComplete="new-password" id="host-password-confirm" type="password" minLength={12} maxLength={128} required value={confirm} onChange={event => setConfirm(event.target.value)}/>
+    <button className="button" disabled={busy}>{busy ? 'Saving…' : 'Create password and open host space'}</button>
+    <p className="hint">This works only on the host laptop itself. Players on Wi-Fi cannot set it.</p>
+  </>}
   {error && <p role="alert" className="error">{error}</p>}<p className="hint">Local access. No online account.</p></form></section>;
 }
 function Library() {
