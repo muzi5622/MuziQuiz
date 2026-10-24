@@ -277,9 +277,6 @@ This builds the project, bundles the server into the desktop app, and creates **
 
 The installer is about 130 MB, which is over GitHub's file-size limit, so **don't commit it**. Upload it as a **GitHub Release** asset instead; `desktop/app/` and `desktop/release/` are already in `.gitignore`. To change the version, edit `version` in `desktop/package.json`.
 
-## License
-
-No license has been chosen yet. Add a `LICENSE` file before publishing an open-source release; dependency licenses apply separately. The design and assets are original and don't use any other quiz product's branding.
 
 ---
 
