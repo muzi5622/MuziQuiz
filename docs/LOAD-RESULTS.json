@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-10-24T07:10:20.794Z",
+  "node": "v24.20.0",
+  "platform": "win32",
+  "cpu": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
+  "logicalCpus": 12,
+  "totalMemoryGiB": 31.703964233398438,
+  "transport": "WebSocket loopback; separate server process, same laptop as clients",
+  "limitation": "Simulation does not certify physical Wi-Fi capacity. Three-device LAN and WAN-unplugged rehearsal remain required.",
+  "results": [
+    {
+      "participants": 50,
+      "connected": 50,
+      "accepted": 50,
+      "failures": 0,
+      "joinAndConnect": {
+        "p50Ms": 166.18089999999984,
+        "p95Ms": 192.2097000000001,
+        "maxMs": 194.72439999999983
+      },
+      "answerAcknowledgment": {
+        "p50Ms": 35.75579999999991,
+        "p95Ms": 48.598799999999756,
+        "maxMs": 49.46069999999963
+      },
+      "burstMs": 53.43629999999939,
+      "peakRssMiB": 99.25390625,
+      "peakHeapMiB": 32.140380859375,
+      "eventLoopP95Ms": 16.383999,
+      "eventLoopUtilization": 0.09345329053989963
+    },
+    {
+      "participants": 100,
+      "connected": 100,
+      "accepted": 100,
+      "failures": 0,
+      "joinAndConnect": {
+        "p50Ms": 356.72339999999986,
+        "p95Ms": 421.22739999999976,
+        "maxMs": 456.8806000000004
+      },
+      "answerAcknowledgment": {
+        "p50Ms": 82.18790000000081,
+        "p95Ms": 103.65650000000096,
+        "maxMs": 105.61059999999998
+      },
+      "burstMs": 115.5555000000004,
+      "peakRssMiB": 122.45703125,
+      "peakHeapMiB": 36.320037841796875,
+      "eventLoopP95Ms": 19.054591,
+      "eventLoopUtilization": 0.17611463211400727
+    },
+    {
+      "participants": 200,
+      "connected": 200,
+      "accepted": 200,
+      "failures": 0,
+      "joinAndConnect": {
+        "p50Ms": 861.6360000000004,
+        "p95Ms": 1149.9020999999993,
+        "maxMs": 1163.5967999999993
+      },
+      "answerAcknowledgment": {
+        "p50Ms": 122.42239999999947,
+        "p95Ms": 231.15749999999935,
+        "maxMs": 235.21780000000035
+      },
+      "burstMs": 256.3127000000004,
+      "peakRssMiB": 135.19921875,
+      "peakHeapMiB": 43.259613037109375,
+      "eventLoopP95Ms": 32.620543,
+      "eventLoopUtilization": 0.3447802771859162
+    }
+  ]
+}

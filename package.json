@@ -1,0 +1,36 @@
+{
+  "name": "localmenti",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "npm run build -w shared && npm run build -w client && npm run build -w server",
+    "typecheck": "npm run build -w shared && npm run typecheck --workspaces",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "start": "node --env-file-if-exists=.env server/dist/index.js",
+    "smoke": "node scripts/lan-smoke.mjs",
+    "test:load": "node scripts/load-test.mjs",
+    "audit:offline": "node scripts/offline-audit.mjs",
+    "setup:host": "npm run build -w shared && npm run build -w server && node --env-file-if-exists=.env server/dist/setup-host.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@types/node": "latest",
+    "eslint": "latest",
+    "globals": "latest",
+    "happy-dom": "^21.0.4",
+    "socket.io-client": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vitest": "latest"
+  }
+}

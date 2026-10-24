@@ -1,0 +1,42 @@
+/* Menti-style leaderboard: borderless rows, solid rounded bars, score at the bar tip. */
+.standings .menti-board{background:none!important;border:0;overflow:hidden}
+.standings .menti-board .ranking-row.menti-row{display:grid;grid-template-columns:clamp(26px,2.6vw,40px) auto minmax(110px,clamp(140px,26%,340px)) minmax(0,1fr);align-items:center;column-gap:clamp(8px,1.2vw,16px);height:calc(var(--rank-step,56px) - 6px);padding:0 4px!important;background:transparent!important;border:0!important;border-radius:0;box-shadow:none!important;overflow:visible;color:inherit}
+.standings .menti-board .menti-row>*{z-index:auto}
+.standings .menti-board .menti-row>.player-avatar{position:relative}
+.standings .menti-board .menti-row .visible-rank{width:auto;font:700 clamp(15px,1.6vw,22px)/1 Arial,sans-serif;text-align:center;opacity:.75}
+.standings .menti-board .menti-row.menti-leader .visible-rank{opacity:1;color:#ffd56b}
+.standings .menti-board .menti-row .rank-name{display:flex;flex-flow:row wrap;align-content:center;column-gap:8px;row-gap:2px;min-width:0;overflow:hidden}
+.standings .menti-board .menti-row .rank-identity{display:contents}
+.standings .menti-board .menti-row .rank-identity>strong{font-weight:600;flex:1 0 100%;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.standings .menti-board .menti-row .leaderboard-tags{flex:0 1 auto;min-width:0;overflow:hidden;order:2}
+.standings .menti-board .menti-row .rank-movement{order:1;white-space:nowrap}
+.standings .menti-board .menti-row .leaderboard-tag{font-size:clamp(8px,.75vw,10px);padding:1px 6px}
+.standings .menti-board .menti-row.ranking-reserved .rank-identity>strong{color:var(--gold)}
+.standings .menti-board .menti-row .rank-movement{font-size:clamp(9px,.8vw,11px)}
+
+/* Few players get taller rows on the projector instead of empty space. */
+.presentation-screen .standings .menti-board{--rank-step:clamp(40px,calc((100dvh - 250px) / var(--rows,10)),88px)}
+.presentation-screen .standings-paged .menti-board{--rank-step:clamp(36px,calc((100dvh - 330px) / var(--rows,10)),88px)}
+.presentation-screen .standings .menti-board .rank-identity>strong{font-size:clamp(15px,calc(var(--rank-step) * .34),30px)}
+.presentation-screen .standings .menti-board .avatar-small{width:clamp(30px,calc(var(--rank-step) * .74),54px);height:clamp(30px,calc(var(--rank-step) * .74),54px)}
+
+/* The bar track reserves room on the right so the score never clips. */
+.standings .menti-board .menti-track{position:relative;height:clamp(14px,calc(var(--rank-step,56px) * .5),40px);font:700 clamp(15px,1.7vw,24px)/1 Arial,sans-serif;margin-right:calc(var(--score-chars,8) * 1ch + 14px);min-width:24px}
+.standings .menti-board .menti-track>.rank-score-fill{position:absolute;inset:0 auto 0 0;height:100%;min-width:6px;max-width:100%;overflow:visible;border-radius:4px 999px 999px 4px;opacity:1;transition:none;background:#5769e7}
+.standings .menti-board .menti-track>.rank-score-fill::after{content:none}
+.standings .menti-board .rank-score-fill.rank-color-1{background:#ff6a9a}
+.standings .menti-board .rank-score-fill.rank-color-2{background:#2fc29b}
+.standings .menti-board .rank-score-fill.rank-color-3{background:#ffb636}
+.standings .menti-board .rank-score-fill.rank-color-4{background:#a073f2}
+.standings .menti-board .rank-score-fill.rank-color-5{background:#33b5e5}
+.standings .menti-board .menti-score{position:absolute;left:100%;top:50%;transform:translateY(-50%);display:flex;align-items:baseline;gap:8px;padding-left:10px;white-space:nowrap}
+.standings .menti-board .menti-score .rank-points{font:700 clamp(15px,1.7vw,24px)/1 Arial,sans-serif;color:inherit}
+.standings .menti-board .menti-score .rank-points small{font-size:.55em;font-weight:400;opacity:.7}
+.standings .menti-board .menti-score .points-gained{font:600 clamp(10px,.9vw,13px)/1 Arial,sans-serif;color:#7ee2a8}
+.standings-settled .menti-board .points-gained{opacity:.6}
+
+
+@media(max-width:700px){
+  .standings .menti-board .ranking-row.menti-row{grid-template-columns:22px auto minmax(70px,30%) minmax(0,1fr);column-gap:6px}
+  .standings .menti-board .menti-score .points-gained{display:none}
+}

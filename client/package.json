@@ -1,0 +1,6 @@
+{
+  "name": "@localmenti/client", "version": "0.1.0", "private": true, "type": "module",
+  "scripts": { "build": "vite build", "typecheck": "tsc --noEmit" },
+  "dependencies": { "@localmenti/shared": "*", "react": "latest", "react-dom": "latest", "react-router-dom": "latest", "socket.io-client": "latest" },
+  "devDependencies": { "vite": "latest", "@vitejs/plugin-react": "latest", "@types/react": "latest", "@types/react-dom": "latest" }
+}

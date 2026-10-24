@@ -1,0 +1,46 @@
+/* Final podium: full-screen, one orchestrated reveal. */
+.winners-stage{--confetti-0:var(--a,#e5484d);--confetti-1:var(--b,#3e63dd);--confetti-2:var(--c,#f5b13d);--confetti-3:var(--d,#12a594);--confetti-4:var(--e,#8e4ec6);--confetti-5:var(--gold,#e3c27e);
+  position:fixed;inset:0;z-index:50;display:grid;grid-template-rows:auto 1fr auto;gap:clamp(12px,3vh,32px);padding:clamp(24px,5vh,56px) clamp(16px,4vw,64px) clamp(20px,4vh,40px);
+  background:radial-gradient(ellipse 60% 55% at 50% 100%,#3b2d50 0%,transparent 70%),var(--stage,#1a1226);color:var(--stage-text,#f3eef8);overflow:hidden;animation:winners-in .45s ease-out both}
+.winners-heading{margin:0;text-align:center;font:700 clamp(30px,5vw,68px)/1.1 var(--font-display,system-ui);letter-spacing:-.02em;animation:winners-heading .5s ease-out both}
+.winners-crowned .winners-heading{color:var(--gold,#e3c27e)}
+
+.winners-podium{overflow:hidden;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:clamp(10px,2vw,28px);max-width:1100px;width:100%;margin:0 auto;min-height:0}
+.winners-column{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0;height:100%}
+.winners-person{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;max-width:100%;padding-bottom:14px;opacity:0;transform:translateY(24px) scale(.9);transition:opacity .45s ease .35s,transform .55s cubic-bezier(.2,1.4,.4,1) .35s}
+.winners-person .player-avatar{width:clamp(56px,8vh,96px);height:clamp(56px,8vh,96px);font-size:clamp(34px,5vh,60px);border-radius:24px}
+.winners-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 clamp(18px,2.4vw,34px)/1.2 var(--font-display,system-ui)}
+.winners-points{font-size:clamp(14px,1.5vw,20px);color:var(--stage-soft,#b8adca);font-variant-numeric:tabular-nums}
+.winners-pedestal{width:100%;display:flex;justify-content:center;padding-top:clamp(12px,2.5vh,28px);border-radius:14px 14px 0 0;transform:translateY(110%);transition:transform .7s cubic-bezier(.2,.9,.25,1)}
+.winners-pedestal span{font:700 clamp(28px,4.5vw,64px)/1 var(--font-display,system-ui);font-variant-numeric:tabular-nums}
+.winners-place-0 .winners-pedestal{height:clamp(150px,34vh,340px);background:linear-gradient(180deg,#ecd29c,#c9a25a);color:#2a1d0c}
+.winners-place-1 .winners-pedestal{height:clamp(110px,24vh,250px);background:linear-gradient(180deg,#ddd8e6,#a49cb4);color:#231b31}
+.winners-place-2 .winners-pedestal{height:clamp(80px,17vh,180px);background:linear-gradient(180deg,#dda57a,#a8683f);color:#2b1608}
+.winners-shown .winners-pedestal{transform:none}
+.winners-shown .winners-person{opacity:1;transform:none}
+.winners-crowned .winners-place-0 .winners-person .player-avatar{box-shadow:0 0 0 4px var(--gold,#e3c27e),0 0 48px 8px #e3c27e66;animation:winner-pulse 1.6s ease-in-out .6s infinite alternate}
+.winners-crowned .winners-place-0 .winners-name{color:var(--gold,#e3c27e)}
+
+.winners-actions{display:flex;justify-content:center;min-height:48px}
+.winners-actions .button{background:var(--gold,#e3c27e)!important;color:var(--ink,#1e1530)!important;min-width:240px;font-weight:700;animation:winners-heading .4s ease-out both}
+.winners-skip{background:transparent;border:1px solid var(--stage-line,#3b2d50);color:var(--stage-soft,#b8adca);border-radius:10px;padding:10px 18px;min-height:44px;cursor:pointer;font:600 14px var(--font,system-ui)}
+
+.winners-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.winners-confetti i{position:absolute;top:-20px;left:var(--x);width:9px;height:15px;border-radius:2px;background:var(--hue);opacity:0;animation:confetti-fall var(--fall) cubic-bezier(.25,.6,.4,1) var(--delay) forwards}
+.winners-confetti i:nth-child(3n){width:7px;height:7px;border-radius:50%}
+
+@keyframes winners-in{from{opacity:0}to{opacity:1}}
+@keyframes winners-heading{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes winner-pulse{to{box-shadow:0 0 0 4px var(--gold,#e3c27e),0 0 72px 16px #e3c27e88}}
+@keyframes confetti-fall{0%{opacity:1;transform:translate(0,0) rotate(0)}85%{opacity:1}100%{opacity:0;transform:translate(var(--drift),105vh) rotate(calc(var(--spin) + 540deg))}}
+
+/* Phone: medal for the top three. */
+.podium-medal{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 16px;padding:12px 16px;border-radius:12px;background:#e3c27e1f;border:1px solid #e3c27e66;color:var(--gold,#e3c27e);font:700 18px/1.2 var(--font-display,system-ui);animation:medal-pop .6s cubic-bezier(.2,1.5,.4,1) .2s both}
+.podium-medal span{font-size:30px}
+.podium-medal.medal-2{color:#ddd8e6;border-color:#ddd8e666;background:#ddd8e614}
+.podium-medal.medal-3{color:#e4ae86;border-color:#dda57a66;background:#dda57a14}
+@keyframes medal-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+
+@media(max-width:700px){.winners-podium{gap:8px}.winners-pedestal{border-radius:10px 10px 0 0}}
+.host-live-standings .winners-stage{display:none}
+.standings-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}

@@ -1,0 +1,269 @@
+/* MuziQuiz theme layer. Loaded last; owns tokens, type and the answer colours.
+   Velvet and champagne: a deep aubergine stage, one muted gold for what matters
+   (PIN, timer, leader, primary action) and jewel-tone answer colours that each
+   letter keeps on phones, the projector, the answer chart and the leaderboard. */
+:root{
+  --ink:#1e1530;--ink-hover:#33264c;--ink-soft:#4d4362;--ink-faint:#83799a;
+  --paper:#f5f3f7;--card:#ffffff;--line:#e5e0ec;--line-strong:#cbc3d8;
+  --stage:#1a1226;--stage-raised:#251a35;--stage-raised-2:#2f2242;--stage-line:#3b2d50;--stage-text:#f3eef8;--stage-soft:#b8adca;
+  --gold:#e3c27e;--gold-hover:#ecd29c;--good:#12a594;--bad:#e5484d;
+  --a:#e5484d;--b:#3e63dd;--c:#f5b13d;--d:#12a594;--e:#8e4ec6;--f:#d6409f;
+  --radius:12px;
+  --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --font-display:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-family:var(--font);color:var(--ink);background:var(--paper);
+}
+body{background:var(--paper);color:var(--ink);font-family:var(--font)}
+button,input,select,textarea{font-family:inherit}
+
+/* ---------- Type ---------- */
+h1,h2,h3,.host-title{font-family:var(--font-display)!important;color:inherit;letter-spacing:-.02em!important}
+h1{font-weight:700;font-size:clamp(40px,5.4vw,72px);line-height:1.05!important}
+h1 em,h2 em{font-family:inherit;font-style:normal;font-weight:inherit}
+.ticket h2,.login-card h2,.join-card h2{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em}
+.intro{color:var(--ink-soft)}
+.hint,.muted{color:var(--ink-faint)}
+
+/* Decorative all-caps labels go; the useful ones read as sentence case. */
+.kicker,main>.eyebrow{display:none}
+.question-meta .kicker,.personal-result .kicker,.participant-wait .kicker{display:inline-block;font-family:var(--font);font-size:14px;font-weight:600;letter-spacing:0;text-transform:none;margin:0}
+
+/* ---------- Shell ---------- */
+.shell header{border-bottom-color:var(--line)}
+.brand{letter-spacing:-.02em;font-family:var(--font-display)}
+.brand-mark{background:var(--ink);color:#fff;border-radius:10px}
+.brand-mark span{color:var(--gold)}
+nav a{color:var(--ink-soft);font-weight:600}
+nav a[aria-current=page]{color:var(--ink);text-decoration-thickness:2px}
+footer{border-top-color:var(--line);color:var(--ink-faint)}
+.dot{background:var(--good)}.pending{background:var(--c)}
+
+/* ---------- Buttons and fields ---------- */
+.button,button.button,a.button{background:var(--ink);color:#fff;border:0;border-radius:10px;font-weight:600;justify-content:center;transition:background .15s,transform .1s}
+.button:hover{background:var(--ink-hover)}
+.button:active{transform:translateY(1px)}
+.button:disabled{background:#a79fb6;color:#f3f0f7}
+:focus-visible{outline:3px solid var(--b);outline-offset:2px}
+input:not([type=radio]):not([type=checkbox]):not([type=file]),select,textarea{border:1.5px solid var(--line-strong)!important;border-radius:10px!important;background:#fff!important;color:var(--ink)}
+input:not([type=radio]):not([type=checkbox]):focus,select:focus,textarea:focus{border-color:var(--b)!important;outline:3px solid #3e63dd33;outline-offset:0}
+label{color:var(--ink)}
+.danger,.text-button.danger{color:var(--bad)}
+
+/* ---------- Join page ---------- */
+.join-layout .ticket,.ticket{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 0 var(--line),0 18px 40px -24px #1e153044;transform:none}
+.ticket .button,.join-card .button{width:100%}
+.join-card,.login-card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:18px;box-shadow:0 18px 40px -24px #1e153044!important;border-top:3px solid var(--gold)!important}
+.join-card h2,.login-card h2{font:700 32px/1.15 var(--font-display)!important;margin:4px 0 22px!important}
+.join-card .pin-input{font-size:30px!important;padding:12px!important}
+.login-card code{background:var(--paper)!important;border-radius:8px}
+@media(max-width:760px){
+  .join-layout{padding:20px 0 32px!important;gap:22px!important}
+  .join-layout>form.join-card{order:-1}
+  .join-layout h1{font-size:34px!important}
+  .join-layout .local-note{display:none}
+  .join-card{padding:22px!important}
+}
+.pin-input{font-family:var(--font-display)!important;font-weight:700;letter-spacing:.3em!important;text-align:center}
+.join-rules,.scoring-note{background:var(--card);border:1px solid var(--line)!important;border-left:4px solid var(--gold)!important;border-radius:var(--radius)}
+
+/* ---------- Host library ---------- */
+.session-launch,.active-lobby,.empty-library,.completed-sessions,.quiz-card,.saved-session{border-radius:var(--radius)!important;border:1px solid var(--line)!important;background:var(--card)!important;box-shadow:none}
+.active-lobby{border-left:4px solid var(--d)!important}
+.empty-library{border-style:dashed!important;border-color:var(--line-strong)!important}
+.empty-symbol{background:var(--gold)!important;border-radius:12px}
+.quiz-card h3{font-family:var(--font-display);font-weight:700}
+.card-number{color:var(--ink-faint);font-family:var(--font)}
+.quiz-card:hover{border-color:var(--line-strong)!important}
+
+/* ---------- Answer colours (phones, projector, chart) ---------- */
+.answer-card-list>.answer-option:nth-of-type(1),.question-options>.display-option:nth-child(1){--opt:var(--a)}
+.answer-card-list>.answer-option:nth-of-type(2),.question-options>.display-option:nth-child(2){--opt:var(--b)}
+.answer-card-list>.answer-option:nth-of-type(3),.question-options>.display-option:nth-child(3){--opt:var(--c)}
+.answer-card-list>.answer-option:nth-of-type(4),.question-options>.display-option:nth-child(4){--opt:var(--d)}
+.answer-card-list>.answer-option:nth-of-type(5),.question-options>.display-option:nth-child(5){--opt:var(--e)}
+.answer-card-list>.answer-option:nth-of-type(6),.question-options>.display-option:nth-child(6){--opt:var(--f)}
+.answer-card-list>.answer-option:nth-of-type(3),.question-options>.display-option:nth-child(3){--opt-ink:var(--ink)}
+.option-letter{font-family:var(--font-display)!important;font-weight:700;border:0!important;border-radius:9px!important}
+
+/* Projector options: colour stripe + coloured letter tile. */
+.presentation-screen .question-options .display-option{background:var(--stage-raised);border:0;border-left:8px solid var(--opt,var(--stage-line));border-radius:var(--radius);color:var(--stage-text)}
+.presentation-screen .question-options .option-letter{background:var(--opt,var(--stage-line));color:var(--opt-ink,#fff);width:44px;height:44px;min-width:44px;font-size:20px}
+
+/* ---------- Stage (projector + host live view) ---------- */
+.presenter-shell.shell,.presentation-screen,.presentation-screen .presentation-toolbar{background:var(--stage)}
+.presentation-screen{color:var(--stage-text)}
+.presentation-screen .presentation-toolbar{border-bottom-color:var(--stage-line)}
+.presentation-screen .hint,.presentation-screen .question-meta .kicker{color:var(--stage-soft)}
+.presentation-screen .question-timer,.presentation-screen .timing-strip{background:var(--stage-raised);border-color:var(--stage-line);color:var(--gold)}
+.presentation-screen .timing-strip progress{accent-color:var(--gold)}
+.presentation-screen .live-question h2{font-weight:700}
+.presentation-screen .question-meta .kicker{font-size:16px}
+.presentation-toolbar button,.presentation-download{border-color:var(--stage-line);border-radius:10px}
+.presentation-controls .button,.presentation-download{background:var(--gold)!important;color:var(--ink)!important;border-color:var(--gold)!important;font-weight:700}
+.presentation-controls .button:hover{background:var(--gold-hover)!important}
+.welcome-lobby .host-pin,.presentation-pin{color:var(--gold)!important;font-family:var(--font-display)!important;font-weight:700}
+.welcome-address strong{color:var(--gold)}
+.arrival-player{border-radius:var(--radius)!important;background:var(--stage-raised)!important;border:1px solid var(--stage-line)!important}
+.welcome-counter{background:var(--stage-raised)!important;border-color:var(--stage-line)!important;border-radius:14px!important}
+.welcome-counter>strong{color:var(--gold)}
+
+/* ---------- Phone play ---------- */
+.participant-shell.shell{background:var(--stage)}
+.participant-shell .participant-topbar{color:var(--stage-text)}
+.participant-shell .participant-pin{color:var(--stage-soft)}
+.participant-focus>.participant-question{background:transparent!important;color:var(--stage-text);padding:6px 2px}
+.participant-focus .participant-question>h2{font-family:var(--font-display)!important;font-weight:700;color:#fff}
+.participant-focus .question-meta .kicker{color:var(--stage-soft)}
+.participant-focus .question-timer{background:var(--gold);color:var(--ink);border-radius:999px;font-weight:700;padding:4px 12px}
+.participant-focus .timing-strip{background:var(--stage-raised)!important;color:var(--stage-soft);border:0!important;border-radius:var(--radius)}
+.participant-focus .timing-strip progress{accent-color:var(--gold)}
+.participant-question legend{color:var(--stage-soft)}
+
+.participant-focus .answer-card-list{display:grid;gap:10px;grid-auto-rows:1fr;flex:1;min-height:0}
+.participant-focus .answer-card-list .answer-option,.participant-focus .answer-card-list .answer-option.answer-selected{margin:0;min-height:58px;padding:12px 14px;border:0;border-radius:14px;background:var(--opt);color:var(--opt-ink,#fff);font-weight:650;font-size:clamp(16px,2.3vh,20px);box-shadow:inset 0 1px 0 #ffffff2e,0 4px 0 #00000040}
+.participant-focus .answer-card-list .answer-option:active{transform:translateY(2px);box-shadow:0 2px 0 #0003}
+.participant-focus .answer-card-list .option-letter{background:#ffffff2e;color:inherit;min-width:34px;width:34px;height:34px;font-size:16px}
+.participant-focus .answer-card-list .answer-card-check{border:2px solid currentColor!important;opacity:.7;border-radius:50%!important;background:transparent!important;width:26px;height:26px;color:inherit}
+.participant-focus .answer-card-list:disabled .answer-option:not(.answer-selected){opacity:.45}
+.participant-focus .answer-card-list .answer-option.answer-selected{outline:3px solid var(--gold);outline-offset:3px}
+
+.participant-focus .answer-receipt{background:var(--stage-raised)!important;border:0!important;border-left:6px solid var(--gold)!important;color:var(--stage-text);border-radius:var(--radius)}
+.participant-focus .response-stamp strong{color:var(--gold);font-family:var(--font-display)}
+.own-answer-result{background:var(--stage-raised)!important;color:var(--stage-text);border-left:6px solid var(--bad);border-radius:var(--radius)}
+.own-answer-result.own-answer-correct{border-left-color:var(--d)}
+.own-answer-result h3{font-family:var(--font-display)!important;font-weight:700}
+.participant-wait,.personal-result{background:var(--stage-raised)!important;color:var(--stage-text);border:1px solid var(--stage-line)}
+.participant-wait h1,.personal-result h1{font-family:var(--font-display)!important;font-weight:700;font-size:30px}
+.participant-wait .kicker,.personal-result .kicker{color:var(--gold)!important}
+.own-standing{background:var(--gold)!important;color:var(--ink)!important}
+.participant-shell .stage-message{color:var(--stage-soft)}
+
+/* ---------- Leaderboard bars share the palette ---------- */
+.standings .menti-board .rank-score-fill.rank-color-0{background:var(--b)}
+.standings .menti-board .rank-score-fill.rank-color-1{background:var(--f)}
+.standings .menti-board .rank-score-fill.rank-color-2{background:var(--d)}
+.standings .menti-board .rank-score-fill.rank-color-3{background:var(--c)}
+.standings .menti-board .rank-score-fill.rank-color-4{background:var(--e)}
+.standings .menti-board .rank-score-fill.rank-color-5{background:var(--a)}
+.presentation-screen .standings-heading h2{font-family:var(--font-display)!important;font-weight:700}
+.reveal-status{border-color:var(--stage-line)!important}
+
+/* ---------- Answer chart and feedback popup ---------- */
+.distribution-column:nth-child(1){--bar-color:var(--a)}.distribution-column:nth-child(2){--bar-color:var(--b)}.distribution-column:nth-child(3){--bar-color:var(--c)}
+.distribution-column:nth-child(4){--bar-color:var(--d)}.distribution-column:nth-child(5){--bar-color:var(--e)}.distribution-column:nth-child(6){--bar-color:var(--f)}
+.distribution-chart .distribution-column .distribution-bar,.presentation-screen .distribution-column.distribution-correct .distribution-bar{background:var(--bar-color);border:0;border-radius:10px 10px 0 0}
+.distribution-column:not(.distribution-correct) .distribution-bar{opacity:.35}
+.answer-distribution:not(:has(.distribution-correct)) .distribution-bar{opacity:1}
+.distribution-heading h3{font:700 clamp(20px,2.2vw,30px)/1.2 var(--font-display)}
+.distribution-heading>span,.distribution-letter,.distribution-percent{font-family:var(--font)}
+.distribution-count{font-family:var(--font-display);font-weight:700}
+.presentation-screen .distribution-count>span,.presentation-screen .distribution-correct .distribution-percent{color:var(--gold)}
+.presentation-screen .distribution-tower{border-bottom-color:var(--stage-line)}
+
+.answer-feedback{background:var(--stage-raised)!important;color:var(--stage-text)!important;border:1px solid var(--stage-line)!important;border-radius:20px}
+.answer-feedback::backdrop{background:#0e0816d9}
+.answer-feedback h2{font:700 32px/1.15 var(--font-display)!important;color:#fff}
+.feedback-symbol{background:var(--stage-line)!important;color:#fff!important;font-weight:700}
+.feedback-correct .feedback-symbol{background:var(--d)!important}
+.feedback-incorrect .feedback-symbol{background:var(--bad)!important}
+.feedback-answer{background:var(--stage)!important;border:0!important;border-left:6px solid var(--d)!important;border-radius:var(--radius)}
+.feedback-answer span{color:var(--stage-soft)!important}
+.answer-feedback .hint{color:var(--stage-soft)}
+.answer-feedback .button{background:var(--gold)!important;color:var(--ink)!important;width:100%;font-weight:700}
+
+/* ---------- Host page top bar ---------- */
+.host-top{justify-content:flex-end!important;min-height:0}
+
+/* ---------- Quiz editor ---------- */
+.editor-savebar{background:#ffffffeb!important;border:1px solid var(--line)!important;border-radius:var(--radius)!important;box-shadow:0 8px 24px -16px #1e153055!important}
+.editor-savebar .button,.import-footer .button,.add-question{background:var(--ink)!important;color:#fff!important;border-color:var(--ink)!important;border-radius:10px}
+.add-question:hover,.editor-savebar .button:hover{background:var(--ink-hover)!important}
+.workbench-tally{background:var(--card)!important;border:1px solid var(--line)}
+.workbench-tally>strong{font-family:var(--font-display);font-weight:700}
+.save-explainer{background:var(--card)!important;border-left:4px solid var(--b)!important;color:var(--ink-soft)!important;border-radius:0 10px 10px 0}
+.quiz-details,.quiz-workbench>.quiz-details{background:var(--card)!important;border:1px solid var(--line)!important;border-top:1px solid var(--line)!important;border-radius:var(--radius)!important}
+.question-card,.quiz-workbench>.question-card{background:var(--card)!important;border:1px solid var(--line)!important;border-top:4px solid var(--ink)!important;box-shadow:none!important}
+.quiz-workbench .question-number{background:var(--ink)!important;color:#fff!important;font-family:var(--font)!important;letter-spacing:0!important;font-weight:700;border-radius:8px!important}
+.quiz-workbench .question-settings{background:var(--paper)!important}
+.question-index a{background:var(--card)!important;border-color:var(--line)!important}
+.question-index a:hover{background:var(--paper)!important;border-color:var(--ink-faint)!important}
+.option-row{background:var(--paper)!important;border:1px solid transparent!important}
+.option-row.correct-option{background:#12a59414!important;border-color:var(--d)!important}
+.correct-radio input,.option-row input[type=radio]{accent-color:var(--d)}
+.correct-choice-badge{font-family:var(--font)!important;color:var(--d)!important;text-transform:none!important;letter-spacing:0!important;font-weight:700;font-size:12px!important}
+.empty-symbol{transform:none!important;font-family:var(--font-display)!important;font-weight:700;color:var(--ink)}
+.scoring-note{background:var(--card)!important}
+
+/* ---------- Leftover lime accents on dark screens ---------- */
+.lobby-controls .button,.projection-download .button,.host-view-tabs button[aria-pressed=true]{background:var(--gold)!important;color:var(--ink)!important}
+.projection-join .host-pin,.welcome-join .host-pin,.projection-heading>span,.personal-result-grid strong{color:var(--gold)!important;font-family:var(--font-display)!important;font-weight:700}
+.participant-focus .feedback-correct .feedback-symbol{background:var(--d)!important;color:#fff!important}
+
+/* ---------- QR join page (/s/PIN before joining) stays light ---------- */
+.participant-shell.shell:has(.join-layout){background:var(--paper);padding:0 20px}
+.participant-shell:has(.join-layout)>header{display:flex}
+.participant-shell:has(.join-layout)>main{min-height:0}
+.participant-shell .join-layout{color:var(--ink)}
+
+/* ---------- Projector lobby brand ---------- */
+.welcome-brand{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 18px;font:700 22px/1 var(--font-display);letter-spacing:-.02em;color:var(--stage-text)}
+.welcome-brand .brand-mark{background:var(--stage-text);color:var(--stage);padding:7px 8px;font-size:17px;letter-spacing:-2px}
+
+/* ---------- Leaderboard pages ---------- */
+.rank-pager{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--stage-line)}
+.rank-pager-range{font-size:14px;color:var(--stage-soft);font-variant-numeric:tabular-nums}
+.rank-pager-buttons{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rank-pager button{min-width:40px;min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--stage-line);background:transparent;color:var(--stage-text);font:600 15px/1 var(--font);cursor:pointer;font-variant-numeric:tabular-nums}
+.rank-pager button:hover:not(:disabled){background:var(--stage-raised)}
+.rank-pager button[aria-current=page]{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.rank-pager button:disabled{opacity:.35;cursor:default}
+.rank-pager-gap{color:var(--stage-soft);padding:0 4px}
+.host-session .rank-pager,.saved-session .rank-pager{border-top-color:currentColor}
+
+/* ---------- Numbers ---------- */
+.rank-points,.visible-rank,.personal-result-grid strong,.distribution-count,.host-pin,.question-timer,.response-stamp strong{font-variant-numeric:tabular-nums}
+.personal-result-grid small{display:block;margin-top:4px;font-size:13px;color:var(--stage-soft)}
+.standings .menti-board .menti-row.ranking-reserved .rank-identity>strong{color:var(--gold)}
+.standings .menti-board .menti-score .points-gained{color:var(--gold)}
+.standings .menti-board .menti-row.menti-leader .visible-rank{color:var(--gold)}
+.creator-tag{background:transparent!important;color:var(--gold)!important;border-color:var(--gold)!important}
+.presentation-screen .fastest-tag,.fastest-tag{background:transparent!important;color:#7ed9cc!important;border-color:#12a59499!important}
+.player-avatar.avatar-reserved{background:var(--gold)!important;border-color:#b8964f!important;box-shadow:0 0 0 3px #e3c27e40!important}
+.avatar-reserved::after{color:var(--gold)!important;background:var(--stage)!important;border-color:var(--gold)!important}
+
+@media(prefers-reduced-motion:reduce){.button,.participant-focus .answer-card-list .answer-option{transition:none}}
+
+/* Creator credit links to LinkedIn. */
+.made-by a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:currentColor}
+.made-by a:hover{color:var(--gold)}
+.made-by a:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:3px}
+
+/* ---------- Avatars: round jewel-tone tokens ----------
+   One shape everywhere. The emoji scales with the token (container units),
+   so every screen's width/height rule keeps the same proportions. */
+.player-avatar,.player-avatar.avatar-small{
+  --avatar:#5b45b0;
+  border-radius:50%!important;border:0!important;container-type:size;overflow:visible;
+  background:radial-gradient(circle at 32% 26%,color-mix(in srgb,var(--avatar) 55%,#fff) 0%,var(--avatar) 52%,color-mix(in srgb,var(--avatar) 70%,#000) 100%)!important;
+  box-shadow:inset 0 0 0 1.5px #ffffff26,inset 0 -3px 6px #0000002e,0 2px 8px -2px #0000005c!important;
+}
+.player-avatar .avatar-glyph{font-size:56cqi;line-height:1;filter:drop-shadow(0 1px 1.5px #00000059);transform:translateY(2%)}
+/* Reserved creator token: gold with a gold ring, no badge. */
+.player-avatar.avatar-reserved{--avatar:#1d1429;
+  background:radial-gradient(circle at 32% 26%,#4b3b66 0%,#1d1429 58%,#0c0814 100%)!important;
+  box-shadow:inset 0 0 0 1.5px #e3c27e66,0 0 0 3px var(--gold,#e3c27e),0 0 18px 2px #e3c27e55!important}
+.player-avatar.avatar-reserved .avatar-glyph{font-size:60cqi;filter:drop-shadow(0 0 4px #ffffff40) drop-shadow(0 1px 1px #000)}
+.avatar-reserved::after{content:none!important}
+.winners-crowned .winners-place-0 .winners-person .player-avatar{box-shadow:0 0 0 4px var(--gold),0 0 48px 8px #e3c27e66!important}
+
+/* Lobby: no card around each player, just the token and the name. */
+.arrival-player,.welcome-lobby .arrival-player,.presentation-screen .arrival-player,.arrival-player.arrival-reserved{background:transparent!important;border:0!important;box-shadow:none!important;padding:6px 2px!important;gap:8px!important}
+.arrival-player strong{font-weight:600}
+.arrival-player>span:last-child{opacity:.75}
+
+/* ---------- Event name ---------- */
+.event-name-field{display:grid;gap:6px;margin:4px 0 16px;max-width:560px;font-weight:600}
+.event-name-field input{font-weight:400}
+.event-name-field .hint{font-weight:400;font-size:12px}
+.welcome-address .welcome-event{display:block;margin:0 auto 10px;max-width:min(90vw,1100px);font:700 clamp(26px,3.6vw,52px)/1.15 var(--font-display);letter-spacing:-.02em;color:var(--stage-text);overflow-wrap:anywhere}
+.participant-wait .wait-event{margin:12px 0 0;font:600 15px/1.4 var(--font);color:var(--gold);overflow-wrap:anywhere}

@@ -1,0 +1,76 @@
+.join-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:30px 9%;align-items:center;padding:55px 0}
+.join-card{background:var(--gold);padding:28px;border:1px solid #adc766;box-shadow:7px 7px 0 #dce0d0}
+.join-card h2{font:42px Georgia,serif;letter-spacing:-2px;margin:20px 0 26px}
+.join-card>.kicker{margin-bottom:0}
+.join-card .button{width:100%;justify-content:center;margin-top:20px}
+.join-card .pin-input{font:28px Consolas,monospace;letter-spacing:7px}
+.resume-link{display:inline-block;font-size:13px;padding:18px 0;text-decoration:underline;text-underline-offset:4px}
+.join-rules{grid-column:1/-1}
+.join-rules .scoring-note{max-width:none;margin-top:0}
+.participant-lobby{max-width:650px;padding:35px 0 60px;margin:0 auto}
+.participant-lobby>.kicker{margin-top:38px}
+.participant-lobby h1{overflow-wrap:anywhere}
+.lobby-connection{display:inline-flex;align-items:center;gap:9px;font-size:12px;line-height:1.5}
+.participant-ticket{border:1px solid #c2cbb5;background:#f9faf3;padding:28px;margin-top:26px}
+.participant-ticket h2{font:30px Georgia,serif;overflow-wrap:anywhere}
+.participant-ticket p{line-height:1.6;color:#56604f}
+.session-chip{font:13px Consolas,monospace;background:var(--gold);padding:8px 12px;display:inline-block;letter-spacing:2px}
+.lobby-count{display:flex;align-items:center;gap:18px;margin:24px 0}
+.lobby-count strong{font-size:64px;font-weight:500;letter-spacing:-3px;line-height:1}
+.lobby-count span{font-size:14px;line-height:1.6;color:#56604f}
+.presenter-shell{max-width:1800px}
+.presenter-shell header nav,.presenter-shell main>.eyebrow{display:none}
+.presenter-shell main{padding-top:26px}
+.presenter-lobby{padding:8px 0 35px}
+.presenter-top{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.presenter-top .kicker{margin:0}
+.presenter-title{font-family:Georgia,serif;font-size:clamp(42px,5vw,78px);letter-spacing:-2px;line-height:1.1;margin:35px 0 45px;overflow-wrap:anywhere}
+.presenter-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:35px;align-items:center}
+.big-pin{font-family:Consolas,'Courier New',monospace;font-size:clamp(60px,10vw,155px);letter-spacing:.08em;line-height:1.15;white-space:nowrap;color:#263120}
+.presenter-url{font-family:Consolas,monospace;font-size:clamp(14px,1.6vw,25px);line-height:1.6;overflow-wrap:anywhere}
+.qr-card{margin:0;justify-self:end;background:var(--gold);border:1px solid #adc766;padding:22px;box-shadow:8px 8px 0 #dce0d0;max-width:100%}
+.qr-card img{display:block;width:clamp(180px,26vw,360px);max-width:100%;height:auto}
+.qr-card figcaption{text-align:center;font-size:13px;padding-top:16px}
+.presenter-rules{border-top:1px solid #c8cdbf;padding-top:22px;font-size:16px;line-height:1.6;margin-top:30px;max-width:1100px}
+.host-session{padding-bottom:20px}
+.host-session>.library-heading{margin:30px 0}
+.host-lobby-grid{display:grid;grid-template-columns:340px 1fr;gap:35px}
+.host-join-details{background:#e5e9db;border-top:3px solid #263120;padding:24px;min-width:0}
+.host-pin{font:48px Consolas,monospace;letter-spacing:5px;margin-top:18px}
+.join-url{font:13px/1.7 Consolas,monospace;overflow-wrap:anywhere}
+.host-qr{display:block;width:220px;max-width:100%;height:auto;margin:22px auto}
+.host-join-details select,.session-launch select{width:100%;font:14px Arial,sans-serif;color:#263120;background:#fffef8;border:1px solid #a7b29b;border-radius:3px;min-height:46px;margin:8px 0 16px;padding:10px}
+.host-join-details>button{width:100%}
+.participant-list{list-style:none;margin:0;padding:0}
+.participant-list li{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #c8cdbf;min-width:0}
+.roster-name{font-size:16px;overflow-wrap:anywhere;flex:1}
+.roster-name small{display:block;font-size:11px;color:#59634f;margin-top:5px}
+.session-controls{margin-top:28px}
+.session-launch{background:#e5e9db;border:1px solid #bdc8ae;padding:22px;margin:25px 0}
+.session-launch .toolbar{align-items:flex-end}
+.session-launch label{min-width:220px;flex:1}
+.session-launch label select{margin-bottom:0}
+.session-launch .button{min-height:46px}
+.active-lobby{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px;background:var(--gold);border:1px solid #adc766;margin:25px 0}
+.active-lobby>div{min-width:0;overflow-wrap:anywhere}
+.active-lobby p{margin:7px 0 0;font-size:13px}
+.roster{min-width:0}
+
+@media(max-width:850px){.join-layout{grid-template-columns:1fr;gap:30px;padding:40px 0}
+.join-layout h1{font-size:56px}
+.join-card{max-width:480px;width:100%;justify-self:center}
+.host-lobby-grid{grid-template-columns:1fr}
+.host-join-details{max-width:480px;width:100%;justify-self:center}
+.presenter-grid{grid-template-columns:1fr}
+.qr-card{justify-self:center}
+.qr-card img{width:280px}
+.big-pin{font-size:clamp(48px,11vw,96px)}
+.presenter-top{align-items:flex-start;flex-direction:column}
+.presenter-title{margin:28px 0}
+.presenter-rules{font-size:14px}
+.active-lobby{align-items:flex-start;flex-direction:column}
+.session-launch .toolbar{align-items:stretch;flex-direction:column}
+.session-launch label{min-width:0;width:100%}
+}
+
+.host-join-details select:focus-visible,.session-launch select:focus-visible{outline:3px solid #517728;outline-offset:3px}

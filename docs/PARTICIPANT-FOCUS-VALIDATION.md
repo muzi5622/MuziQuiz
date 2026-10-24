@@ -1,0 +1,11 @@
+# Participant focus and host split view
+
+Participant screens now focus on the question and touch choices, with a small identity/connection bar. Global navigation/footer, repeated instructions, room charts, top-ten/podium displays and score history were removed from this flow. A single choice click submits and replaces choices with a personal receipt. Reveal shows only the player's own outcome and the revealed correct answer, using a dark green native dialog with high-contrast lime or warm feedback. Polls distinguish recorded votes from missing votes.
+
+At leaderboard publication or finish, phones show only their personal rank and points. Their socket payload strips room option counts, player lists, leaderboard and podium arrays. Host/projector presentations retain group charts and published standings. No private submissions or new points are disclosed before their existing reveal/publication gates.
+
+The host desktop control box has question/actions on the left and horizontal colored score bars on the right. Scores count from the last publication and rows animate to their new positions. The host can retain the last published board across subsequent questions and refresh; unpublished new gains remain sealed. Smaller host screens stack the panels. Motion respects reduced-motion preferences. The supplied leaderboard image informed the bar pattern; no branding/artwork is included.
+
+The participant layout uses safe areas and dynamic viewport height, compact six-choice touch targets, and a two-column choice grid on short landscape screens. Ordinary concise questions are designed to fit the phone viewport. Unusually long allowed content may still overflow; choices are never silently clipped to force a no-scroll appearance.
+
+Typecheck, lint, 116 tests in 18 files, build and offline asset audit pass. React DOM tests cover six available choices, one-tap receipt, and personal-only standings even if a test supplies a global leaderboard. Server tests verify host counts/standings while participant payloads omit them. Existing scoring, reconnect, origin/authentication and immutable-answer tests pass. Localhost/LAN smoke checks pass after restart. Actual browser geometry, native-dialog appearance, animation playback and physical-phone fit still need visual verification.

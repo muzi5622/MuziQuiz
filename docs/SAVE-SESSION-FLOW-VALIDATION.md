@@ -1,0 +1,11 @@
+# Save and session navigation repair
+
+Imported/file/pasted JSON already persisted immediately, but the editor disabled Save for an unchanged imported quiz, making saving appear broken. Save quiz & return now remains enabled for a valid saved quiz, explicitly confirms persistence through the revision-checked update endpoint, and navigates to the library only after success. Failed saves stay in the editor; editing during a pending request prevents navigation until the newer edits are saved. Import completion states clearly that its questions are saved. API validation errors include field context.
+
+Start session creates a LOBBY on the library page without redirecting or opening question one. A separate Open session / Return to lobby link opens host controls with QR/PIN. Next: first question opens the reading stage. During answering, Next: close & reveal uses two authenticated commands with the revision returned by close; a failed close prevents reveal. After reveal the host chooses Next question or Reveal leaderboard. Score publication remains host-controlled.
+
+Removed the retired version-1 importer and ignored development reference images. Vite build replaces old hashed assets. Existing saved quizzes, sessions, results, bearer identities, credentials and backups are preserved; no data reset was performed. Required SQLite migrations remain. Backup: `data/backups/before-save-session-fix-1792828791914.sqlite`.
+
+Added happy-dom as a development-only test dependency. Seven React DOM interaction tests cover pasted/file imports, clean imported Save, dirty Save, invalid paste, failed-save navigation, creation without redirect, opening QR/PIN separately and waiting for Next. HTTP/socket responses are controlled test doubles; separate server integration tests cover persistence, authorization, revision guards and scoring. Three additional host-transition tests check acknowledged close/reveal sequencing and failure handling.
+
+Typecheck, lint, 107 tests across 17 files, production build, offline audit and localhost/LAN smoke checks pass. Runtime dependency audit reports zero known vulnerabilities. Real-browser rendering/animation and physical phone/Wi-Fi validation remain pending.
