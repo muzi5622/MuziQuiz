@@ -268,10 +268,6 @@ label{color:var(--ink)}
 .welcome-address .welcome-event{display:block;margin:0 auto 10px;max-width:min(90vw,1100px);font:700 clamp(26px,3.6vw,52px)/1.15 var(--font-display);letter-spacing:-.02em;color:var(--stage-text);overflow-wrap:anywhere}
 .participant-wait .wait-event{margin:12px 0 0;font:600 15px/1.4 var(--font);color:var(--gold);overflow-wrap:anywhere}
 
-/* Creator identity settings */
-.creator-code-form{display:grid;gap:6px;max-width:420px;margin-top:8px}
-.creator-code-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
-.creator-code-actions .button{width:auto;padding:12px 18px}
 
 /* Desktop app only: open the current page in the default browser. */
 .open-in-browser{display:inline-flex;align-items:center;gap:4px;padding:7px 12px!important;border:1px solid var(--line-strong);border-radius:999px;font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap}

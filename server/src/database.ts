@@ -181,7 +181,7 @@ export function openDatabase(filename: string) {
       db.prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)').run(13,Date.now());
     }
     if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 14').get()) {
-      // Small key/value settings the host changes in the app (e.g. the private creator code hash).
+      // Key/value settings table. Currently unused; kept so databases from 0.1.1–0.1.2 stay valid.
       db.exec('CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)');
       db.prepare('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)').run(14,Date.now());
     }

@@ -229,7 +229,7 @@ export class LobbyService {
       const fromDevice = this.db.prepare('SELECT COUNT(*) AS count FROM participants WHERE session_id = ? AND join_device = ?').get(row.id, device) as { count: number };
       if (!trusted && fromDevice.count >= limit) throw new LobbyError(`This device already joined ${limit === 1 ? 'once' : `${limit} times`}. Resume your player in the browser that joined, or ask the host.`, 429, 'DEVICE_LIMIT');
       const used = this.db.prepare('SELECT 1 FROM participants WHERE session_id = ? AND nickname_key = ?');
-      const identity = resolveJoinName(nickname, privateCodeHash(this.db));
+      const identity = resolveJoinName(nickname, privateCodeHash());
       if (identity.reserved && used.get(row.id,'muzi')) throw new LobbyError('The reserved identity is already used in this session. Resume in the browser that joined it.',409,'RESERVED_ALREADY_JOINED');
       let display = identity.nickname; let suffix = 2;
       while (used.get(row.id, display.toLowerCase())) display = nicknameWithSuffix(identity.nickname, String(suffix++));

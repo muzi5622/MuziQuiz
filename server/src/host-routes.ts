@@ -1,13 +1,12 @@
 import { randomBytes } from 'node:crypto';
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import type Database from 'better-sqlite3';
-import { EmptyBodySchema, LoginSchema, MAX_IMPORT_BYTES, PrivateCodeBodySchema, QuizDraftSchema, QuizFileSchema, QuizUpdateSchema } from '@localmenti/shared';
+import { EmptyBodySchema, LoginSchema, MAX_IMPORT_BYTES, QuizDraftSchema, QuizFileSchema, QuizUpdateSchema } from '@localmenti/shared';
 import { authenticated, configured, cookieToken, hashToken, sessionCookie, SESSION_MS, setHostPassword, verifyPassword } from './auth.js';
 
 // First-run setup is only trusted from the host laptop itself, never over Wi-Fi.
 const isLoopback = (ip: string) => ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(ip);
 import { createQuiz, getQuiz, listQuizzes, updateQuiz } from './quizzes.js';
-import { privateCodeSource, setPrivateCode } from './settings.js';
 import type { LobbyService } from './lobby.js';
 import { registerHostLobbyRoutes } from './lobby-routes.js';
 
@@ -61,15 +60,6 @@ export async function registerHostRoutes(app: FastifyInstance, db: Database.Data
       return reply.header('Set-Cookie', [sessionCookie('', 0), sessionCookie('', 0).replace('Path=/', 'Path=/api/host')]).send({ authenticated: false });
     });
     host.get('/quizzes', () => listQuizzes(db));
-    // Private creator code (MUZI identity). Only its hash is stored; the code is never sent back.
-    host.get('/settings', () => ({ privateCode: privateCodeSource(db) }));
-    host.post('/settings/private-code', (request, reply) => {
-      const parsed = PrivateCodeBodySchema.safeParse(request.body);
-      if (!parsed.success) return reply.code(400).send({ error: parsed.error.issues[0]?.path[0] === 'code' ? parsed.error.issues[0].message : 'Send only the private code.' });
-      setPrivateCode(db, parsed.data.code);
-      return { privateCode: privateCodeSource(db) };
-    });
-    host.delete('/settings/private-code', () => { setPrivateCode(db, null); return { privateCode: privateCodeSource(db) }; });
     registerHostLobbyRoutes(host, lobby, db);
     host.post('/quizzes', (request, reply) => {
       const draft = QuizDraftSchema.safeParse(request.body);

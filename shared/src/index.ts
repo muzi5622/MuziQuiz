@@ -75,7 +75,6 @@ export function nicknameWithSuffix(base: string, suffix = '') {
 /** Private creator code: letters/numbers, an underscore, then 4–16 letters/numbers (e.g. NAME_1234). */
 export const PrivateCodeSchema = z.string().min(6).max(24).regex(/^[A-Za-z0-9]{1,16}_[A-Za-z0-9]{4,16}$/, 'Use letters or numbers, one underscore, then 4–16 letters or numbers, e.g. NAME_1234.');
 export const NicknameInputSchema = z.union([NicknameSchema,PrivateCodeSchema]);
-export const PrivateCodeBodySchema = z.strictObject({ code: PrivateCodeSchema });
 export const JoinSchema = z.strictObject({ pin: PinSchema, nickname: NicknameInputSchema });
 export const ParticipantAuthSchema = z.strictObject({ pin: PinSchema, token: z.string().regex(/^[a-f0-9]{64}$/) });
 /** Optional event name shown on the waiting screens and result cards. No control or bidi characters. */
