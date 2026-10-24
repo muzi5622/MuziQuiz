@@ -165,7 +165,7 @@ points = round(basePoints × (0.5 + 0.5 × max(0, 1 − responseTime / answerTim
 
 The clock starts when the options appear and is measured on the server. For a 1,000-point, 20-second question: answering at 0 s earns 1,000, at 10 s 750, and at exactly 20 s 500. Wrong, missing, late and poll answers earn 0. Wi-Fi congestion can affect timing.
 
-**Ranking:** highest score, then most correct answers, then lowest total answer time. Exact ties share a rank.
+**Ranking and ties:** highest points first. If points are equal, most correct answers wins. If that's equal too, the lowest **total answer time** wins, where a correct answer counts its real time and a wrong or missing answer counts the full timer, so skipping a question never beats answering it. Players who are still exactly equal share the same rank (for example 1, 2, 2, 4) and are listed in the order they joined.
 
 **Fastest award:** the player with the lowest average answer time across **all** scored questions. A wrong or missing answer counts as the full answer time, so skipping questions can never help, and you need at least one correct answer to qualify. Ties share the award. It doesn't change points or ranks.
 

@@ -1,7 +1,7 @@
 {
   "name": "muziquiz-desktop",
   "productName": "MuziQuiz",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "MuziQuiz host app for Windows. Players join from their phone browser by QR code or PIN.",
   "author": "MUZI",
   "private": true,

@@ -17,17 +17,23 @@ export function rankings(db: Database.Database, sessionId: string): RankEntry[] 
     GROUP BY p.id HAVING correct > 0`).all(sessionId) as { participant_id:string;response_ms:number }[];
   const fastestMs = Math.min(...fastest.map(answer => answer.response_ms));
   const fastestIds = new Set(fastest.filter(answer => answer.response_ms === fastestMs).map(answer => answer.participant_id));
+  // Tie-break time covers every published scored question: a correct answer counts its
+  // real time, while a wrong or missing answer counts the full timer. Skipping can
+  // never beat answering, and players with identical results share a rank.
   const rows = db.prepare(`
-    WITH totals AS (
-      SELECT s.participant_id, SUM(s.awarded_points) AS score, SUM(s.is_correct) AS correctAnswers, SUM(s.response_ms) AS responseMs
-      FROM submissions s JOIN session_questions q ON q.id = s.question_id
-      WHERE s.session_id = ? AND q.type = 'quiz_mcq' AND q.revealed_at IS NOT NULL AND score_published_at IS NOT NULL GROUP BY s.participant_id
+    WITH scored AS (
+      SELECT id, duration_seconds FROM session_questions
+      WHERE session_id = ? AND type = 'quiz_mcq' AND revealed_at IS NOT NULL AND score_published_at IS NOT NULL
+    ), totals AS (
+      SELECT p.id AS participant_id, COALESCE(SUM(s.awarded_points), 0) AS score, COALESCE(SUM(s.is_correct), 0) AS correctAnswers,
+        SUM(CASE WHEN s.is_correct = 1 THEN s.response_ms ELSE q.duration_seconds * 1000 END) AS responseMs
+      FROM participants p CROSS JOIN scored q
+      LEFT JOIN submissions s ON s.question_id = q.id AND s.participant_id = p.id
+      WHERE p.session_id = ? AND p.removed_at IS NULL GROUP BY p.id
     )
-    SELECT p.id, p.nickname, p.avatar_index AS avatarIndex, COALESCE(t.score, 0) AS score,
-      COALESCE(t.correctAnswers, 0) AS correctAnswers, COALESCE(t.responseMs, 0) AS responseMs
-    FROM participants p LEFT JOIN totals t ON t.participant_id = p.id
-    WHERE p.session_id = ? AND p.removed_at IS NULL
-    ORDER BY score DESC, correctAnswers DESC, responseMs ASC, p.joined_at ASC, p.id ASC
+    SELECT p.id, p.nickname, p.avatar_index AS avatarIndex, t.score, t.correctAnswers, t.responseMs
+    FROM participants p JOIN totals t ON t.participant_id = p.id
+    ORDER BY t.score DESC, t.correctAnswers DESC, t.responseMs ASC, p.joined_at ASC, p.id ASC
   `).all(sessionId, sessionId) as Omit<RankEntry, 'rank'>[];
   const snapshot = db.prepare('SELECT previous_standings_json FROM sessions WHERE id = ?').get(sessionId) as { previous_standings_json: string };
   const previousRanks = new Map((JSON.parse(snapshot.previous_standings_json) as RankEntry[]).map(entry => [entry.id,entry]));

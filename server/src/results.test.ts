@@ -64,6 +64,25 @@ describe('rankings and safe local exports', () => {
       expect(rankings(f.db, f.sessionId).map(player => player.nickname)).not.toContain('Alpha');
     } finally { f.db.close(); }
   });
+  it('breaks equal points by answer time where wrong and skipped answers both count as the full timer', () => {
+    const f = dataset();
+    try {
+      // Q1 (index 1): Bravo answers wrong after 3s, Delta skips it. Both have 1,000 points and 1 correct answer.
+      f.submit(1, 1, 0, 3000, 0);
+      const order = () => rankings(f.db, f.sessionId).map(player => [player.nickname, player.rank]);
+      // Skipping must not beat answering: Bravo and Delta stay tied (both 0s + 20s).
+      expect(order()).toEqual([['Alpha', 1], ['Bravo', 2], ['Delta', 2], ['Charlie', 4]]);
+    } finally { f.db.close(); }
+  });
+  it('lets players with no correct answers share one rank instead of rewarding fast wrong answers', () => {
+    const f = dataset();
+    try {
+      f.db.prepare('UPDATE session_questions SET score_published_at = NULL WHERE order_index = 0').run();
+      // Only Q1 counts now. Alpha got it right; Bravo was wrong fast, Charlie wrong slow, Delta skipped.
+      f.submit(1, 1, 0, 100, 0); f.submit(2, 1, 0, 19000, 0);
+      expect(rankings(f.db, f.sessionId).map(player => [player.nickname, player.rank])).toEqual([['Alpha', 1], ['Bravo', 2], ['Charlie', 2], ['Delta', 2]]);
+    } finally { f.db.close(); }
+  });
   it('does not expose ranks or unrevealed points before a scored reveal', () => {
     const f = dataset();
     try {
